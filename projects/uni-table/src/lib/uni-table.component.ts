@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { UniDtOptions, UniDataConfig, UniTableState, UniColumn } from './uni-table.interface';
 import { UniLabelComponent } from './uni-label.component';
 import { UniTemplateDirective } from './uni-template.directive';
+import { UniSearchComponent } from './components/uni-search.component'; // Import UniSearchComponent
 
 @Component({
   selector: 'uni-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, UniTemplateDirective, UniLabelComponent],
+  imports: [CommonModule, FormsModule, UniTemplateDirective, UniLabelComponent, UniSearchComponent], // Add UniSearchComponent here
   templateUrl: './uni-table.component.html',
   styleUrl: './uni-table.component.scss'
 })
@@ -28,7 +29,7 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   protected dataConfigS = signal<UniDataConfig>({ columns: [], data: [] });
 
   // State
-  searchTerm = signal('');
+  public searchTerm = signal('');
   currentPage = signal(1);
   pageSize = signal(10);
   sortColumn = signal<string | null>(null);
@@ -190,11 +191,15 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     }
   }
 
-  getTemplate(col: UniColumn): TemplateRef<any> | null {
+  getColumnTemplate(col: UniColumn): TemplateRef<any> | null {
     if (col.templateId) {
       return this.templateMap.get(col.templateId) || null;
     }
     return col.cellTemplate || null;
+  }
+
+  getToolbarTemplate(name: string): TemplateRef<any> | null {
+    return this.templateMap.get(name) || null;
   }
   
   // --- Responsive Logic ---
@@ -338,12 +343,24 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     });
   }
 
-  getColumnStyle(col: UniColumn): any {
-      const style: any = {};
-      if (col.width) style.width = col.width;
-      if (col.minWidth) style.minWidth = col.minWidth;
-      return style;
+  getCombinedStyle(
+    styleConfig: { [key: string]: string } | ((...args: any[]) => { [key: string]: string }) | undefined,
+    row: any | null, // for cellStyle, can be null for headerStyle
+    col: UniColumn // for both headerStyle and cellStyle
+  ): { [key: string]: string } {
+    let styles: { [key: string]: string } = {};
+
+    // Apply width and minWidth from UniColumn
+    if (col.width) styles['width'] = col.width;
+    if (col.minWidth) styles['minWidth'] = col.minWidth;
+
+    if (styleConfig) {
+      const dynamicStyles = typeof styleConfig === 'function' ? (row ? styleConfig(row, col) : styleConfig(col)) : styleConfig;
+      styles = { ...styles, ...dynamicStyles };
+    }
+    return styles;
   }
+
   
   // --- State Management ---
   

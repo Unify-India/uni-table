@@ -1,76 +1,82 @@
 <div class="uni-table" #tableContainer>
-  <div class="uni-table__header">
-    <div class="uni-table__header-row">
-      <!-- Page Length -->
-      @if (dtOptionsS().paging !== false) {
-        <div class="uni-table__page-length">
-          <label class="uni-table__page-length-label">
-            Show
-            <select class="uni-table__page-length-select" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
-              <option [value]="5">5</option>
-              <option [value]="10">10</option>
-              <option [value]="25">25</option>
-              <option [value]="50">50</option>
-              <option [value]="100">100</option>
-            </select>
-            entries
-          </label>
+<div class="uni-table-toolbar-container">
+
+  <ng-container *ngIf="getToolbarTemplate('toolbar') as customToolbar; else defaultToolbar">
+     
+     <ng-container *ngTemplateOutlet="customToolbar"></ng-container>
+  
+  </ng-container>
+
+
+  <ng-template #defaultToolbar>
+     <div class="uni-toolbar-standard">
+        
+        <div class="uni-toolbar-left">
+           @if (dtOptionsS().paging !== false) {
+             <div class="uni-table__page-length">
+               <label class="uni-table__page-length-label">
+                 Show
+                 <select class="uni-table__page-length-select" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
+                   <option [value]="5">5</option>
+                   <option [value]="10">10</option>
+                   <option [value]="25">25</option>
+                   <option [value]="50">50</option>
+                   <option [value]="100">100</option>
+                 </select>
+                 entries
+               </label>
+             </div>
+           }
         </div>
-      }
 
-      <!-- Controls: Actions, Search & ColVis -->
-      <div class="uni-table__controls">
-        <!-- Custom Actions -->
-        @if (dataConfigS().actions) {
-          @for (action of dataConfigS().actions; track action) {
-            <button
-              class="uni-table__button"
-              [ngClass]="action.class || 'uni-table__button--primary'"
-              (click)="action.onClick()"
-              [title]="action.label">
-              @if (action.icon) {
-                <i [class]="action.icon" [class.me-1]="!!action.label"></i>
-              }
-              {{ action.label }}
-            </button>
-          }
-        }
+        <div class="uni-toolbar-right">
+           <ng-container *ngTemplateOutlet="getToolbarTemplate('actions')"></ng-container>
 
-        <!-- Search -->
-        @if (dtOptionsS().searching !== false) {
-          <div class="uni-table__search">
-            <i class="bi bi-search uni-table__search-icon"></i>
-            <input type="text" class="uni-table__search-input" placeholder="Search..."
-                  [ngModel]="searchTerm()" (input)="onSearch($event)">
-          </div>
-        }
+           <!-- Custom Actions (from dataConfig) -->
+           @if (dataConfigS().actions) {
+             @for (action of dataConfigS().actions; track action) {
+               <button
+                 class="uni-table__button"
+                 [ngClass]="action.class || 'uni-table__button--primary'"
+                 (click)="action.onClick()"
+                 [title]="action.label">
+                 @if (action.icon) {
+                   <i [class]="action.icon" [class.me-1]="!!action.label"></i>
+                 }
+                 {{ action.label }}
+               </button>
+             }
+           }
 
-        <!-- ColVis -->
-        @if (dtOptionsS().colVis !== false) {
-          <div class="uni-table__colvis">
-            <button class="uni-table__colvis-button" type="button" (click)="toggleColVisMenu()">
-              <i class="bi bi-layout-three-columns"></i> Columns
-            </button>
-            @if(showColVisMenu()) {
-              <ul class="uni-table__colvis-menu">
-                @for (col of dataConfigS().columns; track col.key; let i = $index) {
-                  <li (click)="$event.stopPropagation()">
-                    <div class="uni-table__colvis-item">
-                      <input class="uni-table__colvis-checkbox" type="checkbox" [id]="'col-' + i"
-                            [checked]="!hiddenColumns().has(col.key)" (change)="toggleColumnVisibility(col.key)">
-                      <label class="uni-table__colvis-label" [for]="'col-' + i">
-                        {{ col.title }}
-                      </label>
-                    </div>
-                  </li>
-                }
-              </ul>
-            }
-          </div>
-        }
-      </div>
-    </div>
-  </div>
+           <!-- ColVis -->
+           @if (dtOptionsS().colVis !== false) {
+             <div class="uni-table__colvis">
+               <button class="uni-table__colvis-button" type="button" (click)="toggleColVisMenu()">
+                 <i class="bi bi-layout-three-columns"></i> Columns
+               </button>
+               @if(showColVisMenu()) {
+                 <ul class="uni-table__colvis-menu">
+                   @for (col of dataConfigS().columns; track col.key; let i = $index) {
+                     <li (click)="$event.stopPropagation()">
+                       <div class="uni-table__colvis-item">
+                         <input class="uni-table__colvis-checkbox" type="checkbox" [id]="'col-' + i"
+                               [checked]="!hiddenColumns().has(col.key)" (change)="toggleColumnVisibility(col.key)">
+                         <label class="uni-table__colvis-label" [for]="'col-' + i">
+                           {{ col.title }}
+                         </label>
+                       </div>
+                     </li>
+                   }
+                 </ul>
+               }
+             </div>
+           }
+        </div>
+
+     </div>
+  </ng-template>
+
+</div>
 
   <div class="uni-table__body" [class.uni-table__body--scroll]="dtOptionsS().overflow === 'scroll'">
     <div class="uni-table__responsive-wrapper" [class.uni-table__responsive-wrapper--visible]="dtOptionsS().overflow === 'responsive'">
@@ -93,10 +99,10 @@
                     class="uni-table__th"
                     [ngClass]="[col.headerClass || '', (col.orderable !== false ? 'uni-table__th--sortable' : '')]"
                     [class.is-dragging]="draggedColumnIndex() === i"
-                    [ngStyle]="getColumnStyle(col)">
+                    [ngStyle]="getCombinedStyle(col.headerStyle, null, col)">
                   <div class="uni-table__th-content">
                     <span class="uni-header__label" [class.uni-header__label--wrap]="col.headerWrap">
-                      <uni-label [key]="col.title"></uni-label>
+                      <uni-label [key]="col.headerLabel || col.title"></uni-label>
                     </span>
                     @if (col.orderable !== false) {
                       <span class="uni-table__sort-icons">
@@ -132,8 +138,10 @@
 
               @for (col of dataConfigS().columns; track col.key) {
                 @if (!isColumnHidden(col.key)) {
-                  <td class="uni-table__td" [ngClass]="col.cellClass || ''" [ngStyle]="getColumnStyle(col)">
-                    @let template = getTemplate(col);
+                  <td class="uni-table__td"
+                      [ngClass]="col.cellClass || ''"
+                      [ngStyle]="getCombinedStyle(col.cellStyle, row, col)">
+                    @let template = getColumnTemplate(col);
                     @if (template) {
                       <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: row[col.key] }"></ng-container>
                     } @else {
@@ -153,8 +161,8 @@
                       @for (col of getResponsiveHiddenColumns(); track col.key) {
                         <li class="uni-table__details-item">
                           <strong>{{ col.title }}:</strong>
-                          <span class="uni-table__details-value">
-                            @let template = getTemplate(col);
+                          <span class="uni-table__details-value" [ngStyle]="getCombinedStyle(col.cellStyle, row, col)">
+                            @let template = getColumnTemplate(col);
                             @if (template) {
                               <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: row[col.key] }"></ng-container>
                             } @else {

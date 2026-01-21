@@ -26,6 +26,7 @@ export interface UniTableState {
 export interface UniColumn {
   key: string;            // Data property key or unique ID
   title: string;          // Header display text
+  headerLabel?: string;   // Optional translation key for header, falls back to title
   width?: string;
   minWidth?: string;
   visible?: boolean;      // Default true
@@ -34,6 +35,8 @@ export interface UniColumn {
   priority?: number;      // Higher number = Higher Priority (Stays visible longer). Default 0.
   headerClass?: string;
   cellClass?: string;
+  headerStyle?: { [key: string]: string } | ((column: UniColumn) => { [key: string]: string });
+  cellStyle?: { [key: string]: string } | ((row: any, column: UniColumn) => { [key: string]: string });
   cellTemplate?: TemplateRef<any>; // For direct template reference
   templateId?: string; // For template reference by string ID
   headerWrap?: boolean; // Optional: If true, header text will wrap. Defaults to false (ellipsis).
