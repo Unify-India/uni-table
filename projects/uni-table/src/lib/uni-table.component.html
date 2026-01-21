@@ -1,0 +1,216 @@
+<div class="uni-table" #tableContainer>
+  <div class="uni-table__header">
+    <div class="uni-table__header-row">
+      <!-- Page Length -->
+      @if (dtOptionsS().paging !== false) {
+        <div class="uni-table__page-length">
+          <label class="uni-table__page-length-label">
+            Show
+            <select class="uni-table__page-length-select" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+              <option [value]="100">100</option>
+            </select>
+            entries
+          </label>
+        </div>
+      }
+
+      <!-- Controls: Actions, Search & ColVis -->
+      <div class="uni-table__controls">
+        <!-- Custom Actions -->
+        @if (dataConfigS().actions) {
+          @for (action of dataConfigS().actions; track action) {
+            <button
+              class="uni-table__button"
+              [ngClass]="action.class || 'uni-table__button--primary'"
+              (click)="action.onClick()"
+              [title]="action.label">
+              @if (action.icon) {
+                <i [class]="action.icon" [class.me-1]="!!action.label"></i>
+              }
+              {{ action.label }}
+            </button>
+          }
+        }
+
+        <!-- Search -->
+        @if (dtOptionsS().searching !== false) {
+          <div class="uni-table__search">
+            <i class="bi bi-search uni-table__search-icon"></i>
+            <input type="text" class="uni-table__search-input" placeholder="Search..."
+                  [ngModel]="searchTerm()" (input)="onSearch($event)">
+          </div>
+        }
+
+        <!-- ColVis -->
+        @if (dtOptionsS().colVis !== false) {
+          <div class="uni-table__colvis">
+            <button class="uni-table__colvis-button" type="button" (click)="toggleColVisMenu()">
+              <i class="bi bi-layout-three-columns"></i> Columns
+            </button>
+            @if(showColVisMenu()) {
+              <ul class="uni-table__colvis-menu">
+                @for (col of dataConfigS().columns; track col.key; let i = $index) {
+                  <li (click)="$event.stopPropagation()">
+                    <div class="uni-table__colvis-item">
+                      <input class="uni-table__colvis-checkbox" type="checkbox" [id]="'col-' + i"
+                            [checked]="!hiddenColumns().has(col.key)" (change)="toggleColumnVisibility(col.key)">
+                      <label class="uni-table__colvis-label" [for]="'col-' + i">
+                        {{ col.title }}
+                      </label>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="uni-table__body" [class.uni-table__body--scroll]="dtOptionsS().overflow === 'scroll'">
+    <div class="uni-table__responsive-wrapper" [class.uni-table__responsive-wrapper--visible]="dtOptionsS().overflow === 'responsive'">
+      <table class="uni-table__table" #dataTable>
+        <thead class="uni-table__thead">
+          <tr>
+            <!-- Expand Toggle Column -->
+            @if (dtOptionsS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0) {
+              <th style="width: 40px;"></th>
+            }
+
+            @for (col of dataConfigS().columns; track col.key; let i = $index) {
+              @if (!isColumnHidden(col.key)) {
+                <th
+                    (click)="onSort(col)"
+                    draggable="true"
+                    (dragstart)="onDragStart($event, i)"
+                    (dragover)="onDragOver($event)"
+                    (drop)="onDrop($event, i)"
+                    class="uni-table__th"
+                    [ngClass]="[col.headerClass || '', (col.orderable !== false ? 'uni-table__th--sortable' : '')]"
+                    [class.is-dragging]="draggedColumnIndex() === i"
+                    [ngStyle]="getColumnStyle(col)">
+                  <div class="uni-table__th-content">
+                    <span class="uni-header__label" [class.uni-header__label--wrap]="col.headerWrap">
+                      <uni-label [key]="col.title"></uni-label>
+                    </span>
+                    @if (col.orderable !== false) {
+                      <span class="uni-table__sort-icons">
+                        <i class="bi bi-arrow-up-short" [class.is-active]="sortColumn() === col.key && sortDirection() === 'asc'"></i>
+                        <i class="bi bi-arrow-down-short" [class.is-active]="sortColumn() === col.key && sortDirection() === 'desc'"></i>
+                      </span>
+                    }
+                  </div>
+                </th>
+              }
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @if (paginatedData().length === 0) {
+            <tr>
+              <td [attr.colspan]="dataConfigS().columns.length + (dtOptionsS().overflow !== 'scroll' ? 1 : 0)" class="uni-table__empty-message">
+                No matching records found
+              </td>
+            </tr>
+          }
+          
+          @for (row of paginatedData(); track row; let i = $index) {
+            <tr class="uni-table__tr">
+              <!-- Expand Toggle Button -->
+              @if (dtOptionsS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0) {
+                <td class="uni-table__td uni-table__td--expander">
+                  <button type="button" class="uni-table__expander-button" (click)="toggleRowExpansion(i)">
+                    <i class="bi" [class.bi-plus-circle-fill]="!expandedRows().has(i)" [class.bi-dash-circle-fill]="expandedRows().has(i)"></i>
+                  </button>
+                </td>
+              }
+
+              @for (col of dataConfigS().columns; track col.key) {
+                @if (!isColumnHidden(col.key)) {
+                  <td class="uni-table__td" [ngClass]="col.cellClass || ''" [ngStyle]="getColumnStyle(col)">
+                    @let template = getTemplate(col);
+                    @if (template) {
+                      <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: row[col.key] }"></ng-container>
+                    } @else {
+                      <span>{{ row[col.key] }}</span>
+                    }
+                  </td>
+                }
+              }
+            </tr>
+
+            <!-- Expanded Details Row -->
+            @if (dtOptionsS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0 && expandedRows().has(i)) {
+              <tr class="uni-table__tr uni-table__tr--details">
+                <td [attr.colspan]="dataConfigS().columns.length - hiddenColumns().size - responsiveHiddenColumns().size + 1">
+                  <div class="uni-table__details-content">
+                    <ul class="uni-table__details-list">
+                      @for (col of getResponsiveHiddenColumns(); track col.key) {
+                        <li class="uni-table__details-item">
+                          <strong>{{ col.title }}:</strong>
+                          <span class="uni-table__details-value">
+                            @let template = getTemplate(col);
+                            @if (template) {
+                              <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: row[col.key] }"></ng-container>
+                            } @else {
+                              <span>{{ row[col.key] }}</span>
+                            }
+                          </span>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (dtOptionsS().paging !== false) {
+    <div class="uni-table__footer">
+      <div class="uni-table__footer-row">
+        <div class="uni-table__summary">
+          Showing {{ (currentPage() - 1) * pageSize() + 1 }} to {{ Math.min(currentPage() * pageSize(), dtOptionsS().serverSide ? (dataConfigS().totalRecords || 0) : processedData().length) }} of {{ dtOptionsS().serverSide ? (dataConfigS().totalRecords || 0) : processedData().length }} entries
+        </div>
+        
+        <div class="uni-table__pagination">
+          <nav aria-label="Page navigation">
+            <ul class="uni-table__pagination-list">
+              <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === 1">
+                <button class="uni-table__pagination-button" (click)="onPageChange(currentPage() - 1)" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </button>
+              </li>
+              
+              @for (page of pages(); track page) {
+                <li class="uni-table__pagination-item" [class.is-active]="page === currentPage()">
+                  @if (pages().length <= 7 || page === 1 || page === totalPages() || (page >= currentPage() - 1 && page <= currentPage() + 1)) {
+                    <button class="uni-table__pagination-button" (click)="onPageChange(page)">
+                      {{ page }}
+                    </button>
+                  } @else if (pages().length > 7 && ((page === 2 && currentPage() > 4) || (page === totalPages() - 1 && currentPage() < totalPages() - 3))) {
+                    <span class="uni-table__pagination-ellipsis">...</span>
+                  }
+                </li>
+              }
+
+              <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === totalPages()">
+                <button class="uni-table__pagination-button" (click)="onPageChange(currentPage() + 1)" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  }
+</div>
