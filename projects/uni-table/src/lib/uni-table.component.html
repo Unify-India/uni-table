@@ -12,7 +12,8 @@
      <div class="uni-toolbar-standard">
         
         <div class="uni-toolbar-left">
-           @if (dtOptionsS().paging !== false) {
+           <uni-search (searchTermChange)="onSearch($event)"></uni-search>
+           @if (configS().paging !== false) {
              <div class="uni-table__page-length">
                <label class="uni-table__page-length-label">
                  Show
@@ -48,11 +49,21 @@
              }
            }
 
+           <div *ngIf="configS().showSaveControls" class="uni-table__controls-group">
+             <button (click)="manualSave()" class="uni-table__button" title="Save View">
+               <i class="bi bi-save"></i>
+             </button>
+
+             <button (click)="resetView()" class="uni-table__button" title="Reset View">
+               <i class="bi bi-arrow-counterclockwise"></i>
+             </button>
+           </div>
+
            <!-- ColVis -->
-           @if (dtOptionsS().colVis !== false) {
+           @if (configS().colVis !== false) {
              <div class="uni-table__colvis">
                <button class="uni-table__colvis-button" type="button" (click)="toggleColVisMenu()">
-                 <i class="bi bi-layout-three-columns"></i> Columns
+                 <i class="bi bi-layout-three-columns"></i>
                </button>
                @if(showColVisMenu()) {
                  <ul class="uni-table__colvis-menu">
@@ -78,13 +89,13 @@
 
 </div>
 
-  <div class="uni-table__body" [class.uni-table__body--scroll]="dtOptionsS().overflow === 'scroll'">
-    <div class="uni-table__responsive-wrapper" [class.uni-table__responsive-wrapper--visible]="dtOptionsS().overflow === 'responsive'">
+  <div class="uni-table__body" [class.uni-table__body--scroll]="configS().overflow === 'scroll'">
+    <div class="uni-table__responsive-wrapper" [class.uni-table__responsive-wrapper--visible]="configS().overflow === 'responsive'">
       <table class="uni-table__table" #dataTable>
         <thead class="uni-table__thead">
           <tr>
             <!-- Expand Toggle Column -->
-            @if (dtOptionsS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0) {
+            @if (configS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0) {
               <th style="width: 40px;"></th>
             }
 
@@ -119,7 +130,7 @@
         <tbody>
           @if (paginatedData().length === 0) {
             <tr>
-              <td [attr.colspan]="dataConfigS().columns.length + (dtOptionsS().overflow !== 'scroll' ? 1 : 0)" class="uni-table__empty-message">
+              <td [attr.colspan]="dataConfigS().columns.length + (configS().overflow !== 'scroll' ? 1 : 0)" class="uni-table__empty-message">
                 No matching records found
               </td>
             </tr>
@@ -128,7 +139,7 @@
           @for (row of paginatedData(); track row; let i = $index) {
             <tr class="uni-table__tr">
               <!-- Expand Toggle Button -->
-              @if (dtOptionsS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0) {
+              @if (configS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0) {
                 <td class="uni-table__td uni-table__td--expander">
                   <button type="button" class="uni-table__expander-button" (click)="toggleRowExpansion(i)">
                     <i class="bi" [class.bi-plus-circle-fill]="!expandedRows().has(i)" [class.bi-dash-circle-fill]="expandedRows().has(i)"></i>
@@ -153,7 +164,7 @@
             </tr>
 
             <!-- Expanded Details Row -->
-            @if (dtOptionsS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0 && expandedRows().has(i)) {
+            @if (configS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0 && expandedRows().has(i)) {
               <tr class="uni-table__tr uni-table__tr--details">
                 <td [attr.colspan]="dataConfigS().columns.length - hiddenColumns().size - responsiveHiddenColumns().size + 1">
                   <div class="uni-table__details-content">
@@ -182,11 +193,11 @@
     </div>
   </div>
 
-  @if (dtOptionsS().paging !== false) {
+  @if (configS().paging !== false) {
     <div class="uni-table__footer">
       <div class="uni-table__footer-row">
         <div class="uni-table__summary">
-          Showing {{ (currentPage() - 1) * pageSize() + 1 }} to {{ Math.min(currentPage() * pageSize(), dtOptionsS().serverSide ? (dataConfigS().totalRecords || 0) : processedData().length) }} of {{ dtOptionsS().serverSide ? (dataConfigS().totalRecords || 0) : processedData().length }} entries
+          Showing {{ (currentPage() - 1) * pageSize() + 1 }} to {{ Math.min(currentPage() * pageSize(), configS().serverSide ? (dataConfigS().totalRecords || 0) : processedData().length) }} of {{ configS().serverSide ? (dataConfigS().totalRecords || 0) : processedData().length }} entries
         </div>
         
         <div class="uni-table__pagination">

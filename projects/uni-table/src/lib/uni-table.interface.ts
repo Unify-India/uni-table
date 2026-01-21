@@ -1,26 +1,37 @@
 import { TemplateRef } from '@angular/core';
 
-export interface UniDtOptions {
+export interface SortState {
+  column: string;
+  direction: 'asc' | 'desc';
+}
+
+export interface UniTableConfig {
   paging?: boolean;
   searching?: boolean;
   colVis?: boolean;
   pageLength?: number;
   responsive?: boolean; // Deprecated
   overflow?: 'scroll' | 'responsive' | 'visible';
-  saveState?: boolean;
-  stateSaveKey?: string;
   serverSide?: boolean;
   onStateChange?: (state: UniTableState) => void;
-  defaultSort?: { column: string; direction: 'asc' | 'desc' };
+  defaultSort?: SortState; // Use new SortState interface
+
+  /**
+   * PERSISTENCE SETTINGS
+   */
+  storageKey?: string; // New
+  autoSaveState?: boolean; // New
+  showSaveControls?: boolean; // New
 }
 
 export interface UniTableState {
   searchTerm: string;
   pageSize: number;
-  sortColumn: string | null;
-  sortDirection: 'asc' | 'desc';
+  sortColumn: string | null; // Changed to match SortState
+  sortDirection: 'asc' | 'desc'; // Changed to match SortState
   currentPage: number;
   hiddenColumns: string[];
+  externalFilters?: any; // New
 }
 
 export interface UniColumn {

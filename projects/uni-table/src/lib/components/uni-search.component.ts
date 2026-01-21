@@ -1,14 +1,13 @@
-import { Component, inject, input } from '@angular/core';
-import { UniTableComponent } from '../uni-table.component'; // Ensure correct path
-import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel if needed, or remove if not.
+import { Component, input, output } from '@angular/core';
+import { FormsModule } from '@angular/forms'; 
 
 @Component({
   selector: 'uni-search',
   standalone: true,
-  imports: [FormsModule], // Add FormsModule here if needed
+  imports: [FormsModule], 
   template: `
     <div class="uni-search-wrapper">
-      <span class="search-icon">🔍</span>
+      <i class="bi bi-search search-icon"></i>
       <input 
         type="text" 
         [placeholder]="placeholder()" 
@@ -17,21 +16,14 @@ import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel 
       />
     </div>
   `,
-  styles: [`
-    .uni-search-wrapper { display: flex; align-items: center; border: 1px solid #ccc; padding: 6px 10px; border-radius: 4px; background: #fff; }
-    .uni-search-input { border: none; outline: none; margin-left: 8px; width: 100%; background: transparent; }
-  `]
+  styleUrl: './uni-search.component.scss' // Moved styles to a file
 })
 export class UniSearchComponent {
-  // 1. Dependency Injection: Finds the parent Table automatically
-  private table = inject(UniTableComponent);
-  
-  // 2. Configurable Placeholder
+  searchTermChange = output<string>();
   placeholder = input('Search...'); 
 
   onInput(e: Event) {
     const val = (e.target as HTMLInputElement).value;
-    // 3. Update the Table's Signal State directly
-    this.table.searchTerm.set(val); // Changed from updateSearchTerm to searchTerm.set
+    this.searchTermChange.emit(val);
   }
 }

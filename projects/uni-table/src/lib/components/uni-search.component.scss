@@ -1,0 +1,22 @@
+.uni-search-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--uni-control-border-color);
+  padding: var(--uni-control-padding-y) var(--uni-control-padding-x);
+  border-radius: var(--uni-border-radius);
+  background: var(--uni-control-bg);
+  width: 200px;
+}
+
+.uni-search-input {
+  border: none;
+  outline: none;
+  margin-left: 8px;
+  width: 100%;
+  background: transparent;
+  color: var(--uni-control-text-color);
+}
+
+.search-icon {
+  color: #6c757d; // Match with existing search icon color
+}

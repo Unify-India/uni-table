@@ -1,163 +1,309 @@
-Here is the consolidated feature list for your `uni-table` library, refined into concise 1-2 line statements suitable for your README or internal documentation.
+Here is the implementation plan for the **Preference Persistence Module**. This covers both the silent auto-save functionality and the manual save/reset controls for handling external filters.
 
-### **`uni-table` Feature Highlights**
+### **1. Configuration Updates**
 
-* **Signal-First Architecture:**
-Leverages Angular 19 `signal` inputs and `computed()` properties for sorting, pagination, and filtering, ensuring optimal `OnPush` performance and instant UI updates.
-* **Reactive Column Visibility (ColVis):**
-Implements column toggling via reactive signals rather than array mutation, allowing for instant, flicker-free showing and hiding of columns without re-rendering the entire table.
-* **Hybrid Responsiveness (Smart Collapse):**
-Utilizes `ResizeObserver` to automatically detect container width and move overflowing columns into an expandable "child row" (accordion style), eliminating horizontal scrolling on mobile.
-* **Config-Driven Template Injection:**
-Enables users to map custom UI templates (like action buttons) to columns using simple string IDs in the JSON config, keeping the table logic completely decoupled from user component logic.
-* **Decoupled Translation Support:**
-Includes a built-in, config-toggleable translation pipe (via `InjectionToken`) that handles header localization without requiring complex external dependencies or class overrides.
-* **Modern CSS Variable Theming:**
-Exposes a full suite of CSS Custom Properties (e.g., `--uni-header-bg`) for effortless theming that pierces Shadow DOM boundaries without using `::ng-deep`.
-* **Encapsulation-Free Customization:**
-Uses `ViewEncapsulation.None` with strict BEM-style naming (e.g., `.uni-table__row`) to allow users to easily override default styles using standard CSS classes.
-* **Dynamic Class Injection:**
-Supports conditional styling by allowing users to inject custom class names for specific headers or cells directly via the column configuration (e.g., `{ cellClass: 'status-error' }`).
-Our final decision was to use the **"Soft Coupling" Strategy** combined with a **Signal-Based Component**.
+We need to add flags to your `UniTableConfig` interface to control this behavior.
 
-This approach assumes your organization uses `ngx-translate` (standard), but builds the library so it doesn't *crash* if the translation service is missing. It shifts the complexity **away from the user**—they just pass a key, and the library handles the reactivity.
+```typescript
+// uni-table.config.ts
 
-Here is the implementation blueprint.
+export interface UniTableConfig {
+  // ... existing configs ...
 
-### 1. The Strategy: "Soft Coupling"
+  /**
+   * PERSISTENCE SETTINGS
+   */
 
-* **Dependency:** Your library does **not** bundle `ngx-translate`. It lists it as a `peerDependency`.
-* **Mechanism:** We create a smart component (`UniLabelComponent`) that attempts to inject `TranslateService`.
-* **If found:** It subscribes to language changes and updates text instantly.
-* **If missing:** It falls back to showing the raw key (safe failure).
+  /**
+   * Unique key for LocalStorage.
+   * REQUIRED if you want any saving features.
+   * Example: 'user_list_table_v1'
+   */
+  storageKey?: string;
 
+  /**
+   * If true, table automatically saves Sort, Page, and ColVis to LocalStorage
+   * on every change (silently).
+   * @default true
+   */
+  autoSaveState?: boolean;
 
-
----
-
-### 2. The Implementation (Your Code)
-
-#### Step A: Update `package.json` (Library Side)
-
-Do not install it as a dependency. Use Peer Dependencies.
-
-```json
-"peerDependencies": {
-  "@angular/common": "^19.0.0",
-  "@angular/core": "^19.0.0",
-  "@ngx-translate/core": "^15.0.0" // or whatever version you use
+  /**
+   * If true, shows "Save View" and "Reset View" buttons in the toolbar.
+   * Use this when you want to save EXTERNAL filters along with table state.
+   * @default false
+   */
+  showSaveControls?: boolean;
 }
 
 ```
 
-#### Step B: The `UniLabelComponent` (The Engine)
+---
 
-Create this component inside your library. This is what you will use inside your `<th>` tags.
+### **2. Implementation Logic (Library Side)**
+
+This logic goes inside your `UniTableComponent`.
+
+#### **Part A: Auto-Save (The "Silent" Observer)**
+
+We use an Angular 19 `effect()` to watch your signals and write to LocalStorage automatically.
 
 ```typescript
-import { Component, input, inject, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslateService } from '@ngx-translate/core';
+// uni-table.component.ts
 
-@Component({
-  selector: 'uni-label',
-  standalone: true,
-  imports: [CommonModule],
-  // The template is just the text. No wrappers needed.
-  template: `{{ displayText() }}` 
-})
-export class UniLabelComponent {
-  // 1. The Key passed from config (e.g., 'USER.NAME')
-  key = input.required<string>();
+// Inputs
+config = input.required<UniTableConfig>();
 
-  // 2. Soft Injection: Try to get the service, but don't crash if missing
-  private translate = inject(TranslateService, { optional: true });
+// Internal State Signals
+pageIndex = signal(0);
+sortState = signal<SortState>({ field: '', direction: '' });
+hiddenColumns = signal<Set<string>>(new Set());
 
-  // 3. Create a Signal for the Language Change Event
-  // If service exists, we turn the Observable stream into a Signal
-  // If service is missing, we create a dummy signal that never changes
-  private langChange = this.translate 
-    ? toSignal(this.translate.onLangChange) 
-    : signal(null);
-
-  // 4. The Reactive Logic
-  displayText = computed(() => {
-    const k = this.key();
+constructor() {
+  // 1. THE AUTO-SAVER
+  effect(() => {
+    const cfg = this.config();
     
-    // Register dependency on the language signal so this re-runs when lang changes
-    this.langChange(); 
+    // Only run if AutoSave is NOT disabled and we have a Key
+    if (cfg.autoSaveState !== false && cfg.storageKey) {
+      
+      // Create snapshot of internal state
+      const state = {
+        page: this.pageIndex(),
+        sort: this.sortState(),
+        hiddenCols: Array.from(this.hiddenColumns())
+      };
 
-    // If Service exists, return translated string (Instant/Synchronous)
-    if (this.translate) {
-      return this.translate.instant(k);
+      // Save silently
+      localStorage.setItem(cfg.storageKey, JSON.stringify(state));
     }
-
-    // Fallback: Just show the key
-    return k;
   });
 }
 
+// 2. THE RESTORATION (On Init)
+ngOnInit() {
+  const cfg = this.config();
+  if (cfg.storageKey) {
+    const saved = localStorage.getItem(cfg.storageKey);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      
+      // Restore Internal State
+      this.pageIndex.set(parsed.page ?? 0);
+      this.sortState.set(parsed.sort ?? { field: '', direction: '' });
+      if (parsed.hiddenCols) {
+        this.hiddenColumns.set(new Set(parsed.hiddenCols));
+      }
+
+      // If we found external filters (from a Manual Save), emit them back to parent!
+      if (parsed.externalFilters) {
+        this.stateRestored.emit(parsed.externalFilters);
+      }
+    }
+  }
+}
+
 ```
 
-#### Step C: Use it in `UniTableComponent` (The Table)
+---
 
-Update your table's header template to use this component instead of `{{ col.label }}`.
+#### **Part B: Manual Save Controls (The "Gateway")**
+
+These controls are displayed only when `showSaveControls: true`. They handle the "External Filter" snapshot.
+
+**New Input/Output:**
+
+```typescript
+// Input: Parent passes current filter object here (e.g., { status: 'Active' })
+externalState = input<any>(null); 
+
+// Output: We emit this when loading from storage or resetting
+stateRestored = output<any>(); 
+
+```
+
+**The Template (Inside Toolbar):**
 
 ```html
-<thead>
-  <tr>
-    <th *ngFor="let col of columns()">
-      
-      <div class="uni-header__container">
-        
-        <uni-label 
-           [key]="col.headerLabel" 
-           class="uni-header__label"
-           [class.uni-header__label--wrap]="col.headerWrap">
-        </uni-label>
+<div *ngIf="config().showSaveControls" class="uni-table-controls">
+  
+  <button (click)="manualSave()" class="btn-save" title="Save View">
+    <i class="icon-save"></i>
+  </button>
 
-        <div class="uni-header__icon">...</div>
+  <button (click)="resetView()" class="btn-reset" title="Reset View">
+    <i class="icon-refresh"></i>
+  </button>
 
-      </div>
+</div>
 
-    </th>
-  </tr>
-</thead>
+```
+
+**The Logic:**
+
+```typescript
+manualSave() {
+  const cfg = this.config();
+  if (!cfg.storageKey) return;
+
+  const fullSnapshot = {
+    // 1. Capture Internal State
+    page: this.pageIndex(),
+    sort: this.sortState(),
+    hiddenCols: Array.from(this.hiddenColumns()),
+    
+    // 2. Capture External Filter State (The Gateway)
+    externalFilters: this.externalState() 
+  };
+
+  localStorage.setItem(cfg.storageKey, JSON.stringify(fullSnapshot));
+  // Optional: Show "View Saved" toast
+}
+
+resetView() {
+  const cfg = this.config();
+  if (cfg.storageKey) {
+    localStorage.removeItem(cfg.storageKey);
+  }
+
+  // 1. Reset Internal State to Defaults
+  this.pageIndex.set(0);
+  this.sortState.set({ field: '', direction: '' });
+  this.hiddenColumns.set(new Set());
+  
+  // 2. Tell Parent to Reset External Filters
+  this.stateRestored.emit(null); 
+  
+  // 3. Trigger Data Refresh
+  this.refreshData();
+}
 
 ```
 
 ---
 
-### 3. The User Experience (User Side)
+### **3. User Experience (How to use it)**
 
-The user does **zero** setup for this. They just write the config string.
+#### **Scenario A: Simple Auto-Save (Default)**
 
-**user-list.component.ts**
+*User just wants page/sort to be remembered.*
 
 ```typescript
-columns = [
-  // User just passes the Key. No pipes, no services.
-  { field: 'firstName', headerLabel: 'LBL_FIRST_NAME' }, 
-  { field: 'status', headerLabel: 'LBL_STATUS' }
-];
+config = {
+  storageKey: 'users_v1',
+  autoSaveState: true,
+  showSaveControls: false // No buttons needed
+};
 
 ```
 
-**app.config.ts (User's Global Setup)**
-The user just sets up `ngx-translate` as they normally would in any Angular app.
+#### **Scenario B: Saving External Filters**
+
+*User has a sidebar with complex filters and wants to save/restore them.*
+
+**Parent Component TS:**
 
 ```typescript
-providers: [
-  importProvidersFrom(TranslateModule.forRoot(...))
-]
+config = {
+  storageKey: 'users_complex_v1',
+  showSaveControls: true // Show buttons
+};
+
+filters = signal({ status: 'active' });
+
+// When table emits restored data (on load) or null (on reset)
+restoreFilters(savedFilters: any) {
+  if (savedFilters) {
+    this.filterForm.patchValue(savedFilters);
+  } else {
+    this.filterForm.reset(); // Handle Reset
+  }
+}
 
 ```
 
----
+**Parent HTML:**
 
-### 4. Why this is the "Final Take"
+```html
+<uni-table 
+   [config]="config" 
+   [externalState]="filters()" 
+   (stateRestored)="restoreFilters($event)">
+</uni-table>
 
-1. **Reactivity:** Because we used `toSignal(onLangChange)` inside `computed`, the text updates the *millisecond* the language changes, without reloading the table or the page.
-2. **Safety:** If a team uses your library in a project *without* `ngx-translate`, the table still works (it just shows "LBL_FIRST_NAME").
-3. **Performance:** Angular's Change Detection only updates the text node inside `<uni-label>`. It does not re-render the `<th>` or the `<tr>`.
+```
+This is the **"Gateway Pattern"** I detailed in Part B.
+
+To be absolutely clear: **The Table does not need to know what the filters are.** It just acts as a secure "Vault" that holds the data and gives it back when the page loads.
+
+Here is the exact flow of how the Table **reads, saves, and emits back** the user's filter preference.
+
+### The "Handshake" Workflow
+
+#### 1. The Saving Flow (Input)
+
+* **User Action:** User selects "City: New York" in their external component.
+* **User Code:** They pass this object `{ city: 'NY' }` into your table's `[externalState]` input.
+* **Save Trigger:** When the user clicks the "Save View" button (inside the table), the Table takes a snapshot:
+* *Internal:* Page 1, Sort Desc.
+* *External:* `{ city: 'NY' }` (It grabbed this from the input).
+
+
+* **Action:** Table writes this combined JSON to LocalStorage.
+
+#### 2. The Restoration Flow (Emit Back)
+
+* **Page Load:** User refreshes the browser.
+* **Table Init:** The Table reads LocalStorage.
+* **Internal Restore:** It sets itself to Page 1, Sort Desc.
+* **External Restore (The Critical Part):**
+* The Table sees the `{ city: 'NY' }` data in the JSON.
+* It **EMITS** this object via the `(stateRestored)` output event.
+
+
+* **User Code:** The Parent component listens to `(stateRestored)`. It receives `{ city: 'NY' }` and immediately updates the "City" dropdown to "New York".
+
+### The Code Implementation (Simplified)
+
+**1. Library Side (`uni-table.component.ts`)**
+
+```typescript
+// INPUT: The Gateway for INCOMING filters
+externalState = input<any>(null); 
+
+// OUTPUT: The Gateway for OUTGOING (restored) filters
+stateRestored = output<any>(); 
+
+ngOnInit() {
+  const savedJson = localStorage.getItem(this.config().storageKey);
+  if (savedJson) {
+    const data = JSON.parse(savedJson);
+    
+    // 1. Restore Table's own state internally
+    this.pageIndex.set(data.page);
+
+    // 2. EMIT BACK the external filters to the user
+    if (data.externalFilters) {
+      this.stateRestored.emit(data.externalFilters);
+    }
+  }
+}
+
+```
+
+**2. User Side (`user-list.component.html`)**
+
+```html
+<app-filter [form]="filterForm"></app-filter>
+
+<uni-table 
+    [externalState]="filterForm.value" 
+    (stateRestored)="filterForm.patchValue($event)">
+    </uni-table>
+
+```
+
+### Why this is the correct approach
+
+1. **Zero Coupling:** Your table doesn't know if the filter is a Date Range, a Dropdown, or a Search string. It just saves the `JSON` object.
+2. **Timing Safe:** Because the table emits `(stateRestored)` inside `ngOnInit`, the Parent component receives the data immediately on load, ensuring the UI is synced before the user even sees the page.
