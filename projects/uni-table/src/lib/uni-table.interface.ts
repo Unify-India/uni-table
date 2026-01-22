@@ -15,6 +15,8 @@ export interface UniTableConfig {
   serverSide?: boolean;
   onStateChange?: (state: UniTableState) => void;
   defaultSort?: SortState; // Use new SortState interface
+  manualSearch?: boolean;
+  showContextMenu?: boolean;
 
   /**
    * PERSISTENCE SETTINGS

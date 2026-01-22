@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, ViewChild, signal, computed, WritableSignal, effect, SimpleChanges, OnChanges, ContentChildren, QueryList, AfterContentInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, ViewChild, signal, computed, WritableSignal, effect, SimpleChanges, OnChanges, ContentChildren, QueryList, AfterContentInit, TemplateRef, ContentChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UniTableConfig, UniDataConfig, UniTableState, UniColumn, SortState } from './uni-table.interface';
 import { UniLabelComponent } from './components/uni-label.component';
 import { UniTemplateDirective } from './components/uni-template.directive';
 import { UniSearchComponent } from './components/uni-search.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'uni-table',
@@ -23,8 +24,10 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   @ViewChild('tableContainer') tableContainer!: ElementRef;
   @ViewChild('dataTable') dataTable!: ElementRef;
   @ContentChildren(UniTemplateDirective) templates!: QueryList<UniTemplateDirective>;
-
+  @ContentChild(UniSearchComponent) manualSearchComponent?: UniSearchComponent;
+  
   private templateMap = new Map<string, TemplateRef<any>>();
+  private manualSearchSubscription?: Subscription;
 
   protected configS = signal<UniTableConfig>({});
   protected dataConfigS = signal<UniDataConfig>({ columns: [], data: [] });
@@ -39,6 +42,7 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   responsiveHiddenColumns = signal<Set<string>>(new Set());
   expandedRows = signal<Set<number>>(new Set());
   showColVisMenu = signal(false);
+  menuOpen = signal(false);
 
   draggedColumnIndex = signal<number | null>(null);
 
@@ -52,7 +56,7 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     let data = [...config.data];
     const term = this.searchTerm();
 
-    if (options.searching && term) {
+    if (options.searching !== false && term) {
       const lowerTerm = term.toLowerCase();
       const searchableCols = config.columns.filter(c => c.searchable !== false).map(c => c.key);
       data = data.filter(row =>
@@ -138,6 +142,13 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   ngOnInit(): void {
     const cfg = this.config;
 
+    this.configS.update(current => ({
+      colVis: true,
+      showSaveControls: true,
+      autoSaveState: true,
+      ...current
+    }));
+    
     this.pageSize.set(cfg.pageLength || 10);
     if (cfg.defaultSort) {
       this.sortColumn.set(cfg.defaultSort.column);
@@ -193,6 +204,12 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     this.templates.forEach(item => {
       this.templateMap.set(item.name, item.template);
     });
+
+    if (this.manualSearchComponent) {
+      this.manualSearchSubscription = this.manualSearchComponent.searchTermChange.subscribe(term => {
+        this.onSearch(term);
+      }) as Subscription;
+    }
   }
 
   ngAfterViewInit() {
@@ -205,6 +222,7 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
+    this.manualSearchSubscription?.unsubscribe();
   }
 
   getColumnTemplate(col: UniColumn): TemplateRef<any> | null {
@@ -214,7 +232,7 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     return col.cellTemplate || null;
   }
 
-  getToolbarTemplate(name: string): TemplateRef<any> | null {
+  getTemplate(name: string): TemplateRef<any> | null {
     return this.templateMap.get(name) || null;
   }
   
@@ -303,6 +321,10 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   toggleColVisMenu() {
     this.showColVisMenu.update(v => !v);
+  }
+
+  toggleMenu() {
+    this.menuOpen.update(v => !v);
   }
 
   toggleRowExpansion(index: number) {

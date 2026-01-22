@@ -5,11 +5,12 @@
   --uni-line-height: 1.5;
   --uni-bg: #fff;
   --uni-text-color: #212529;
-  --uni-border-color: #dee2e6;
+  --uni-border: #dee2e6;
   --uni-border-radius: 0.375rem;
 
   // Header & Footer variables
   --uni-hf-bg: #f8f9fa;
+  --uni-bg-header: #fff;
   --uni-hf-text-color: #495057;
   --uni-hf-padding: 0.75rem;
 
@@ -48,10 +49,6 @@
   --uni-pagination-disabled-color: #6c757d;
   --uni-pagination-padding-y: 0.375rem;
   --uni-pagination-padding-x: 0.75rem;
-
-  // Toolbar variables
-  --uni-toolbar-bg: var(--uni-hf-bg);
-  --uni-toolbar-border-color: var(--uni-border-color);
 }
 
 .uni-table {
@@ -60,21 +57,17 @@
   line-height: var(--uni-line-height);
   color: var(--uni-text-color);
   background-color: var(--uni-bg);
-  border: 1px solid var(--uni-border-color);
+  border: 1px solid var(--uni-border);
   border-radius: var(--uni-border-radius);
   overflow: hidden;
 
-  &__header, &__footer {
+  &__footer {
     background-color: var(--uni-hf-bg);
     padding: var(--uni-hf-padding);
   }
-
-  &__header {
-    border-bottom: 1px solid var(--uni-border-color);
-  }
   
   &__footer {
-    border-top: 1px solid var(--uni-border-color);
+    border-top: 1px solid var(--uni-border);
   }
 
   &__header-row, &__footer-row {
@@ -108,10 +101,10 @@
     }
   }
 
-  &__controls {
+  &__controls-group {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
   }
   
   &__button {
@@ -152,7 +145,7 @@
     right: 0;
     z-index: 1000;
     background-color: var(--uni-bg);
-    border: 1px solid var(--uni-border-color);
+    border: 1px solid var(--uni-border);
     border-radius: var(--uni-border-radius);
     padding: 0.5rem;
     margin-top: 0.25rem;
@@ -200,14 +193,14 @@
 
   &__th, &__td {
     padding: var(--uni-table-cell-padding-y) var(--uni-table-cell-padding-x);
-    border-top: 1px solid var(--uni-border-color);
+    border-top: 1px solid var(--uni-border);
     vertical-align: middle;
   }
 
   &__th {
     text-align: inherit;
     user-select: none;
-    border-bottom: 2px solid var(--uni-border-color);
+    border-bottom: 2px solid var(--uni-border);
 
     &--sortable {
       cursor: pointer;
@@ -312,7 +305,7 @@
       color: var(--uni-pagination-disabled-color);
       pointer-events: none;
       background-color: transparent;
-      border-color: var(--uni-border-color);
+      border-color: var(--uni-border);
     }
   }
   
@@ -324,7 +317,7 @@
     color: var(--uni-pagination-color);
     text-decoration: none;
     background-color: var(--uni-bg);
-    border: 1px solid var(--uni-border-color);
+    border: 1px solid var(--uni-border);
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     cursor: pointer;
   }
@@ -346,30 +339,46 @@
   &__pagination-ellipsis {
     cursor: default;
   }
-
-  // Toolbar styles
-  .uni-table-toolbar-container {
-    padding: 12px 16px;
-    background: var(--uni-toolbar-bg);
-    border-bottom: 1px solid var(--uni-toolbar-border-color);
-    display: block; // Ensures it takes full width
-  }
-
-  .uni-toolbar-standard {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  .uni-toolbar-left, .uni-toolbar-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
 }
 
+// New Toolbar Styles
+.uni-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--uni-bg-header, #fff);
+  border-bottom: 1px solid var(--uni-border, #eee);
+}
+
+.uni-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.uni-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uni-context-menu-wrapper {
+  position: relative;
+}
+
+.uni-dropdown-content {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--uni-bg);
+  border: 1px solid var(--uni-border);
+  border-radius: var(--uni-border-radius);
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  list-style: none;
+  min-width: 180px;
+}
 
 /* Default (Ellipsis) */
 .uni-header__label {

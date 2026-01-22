@@ -1,93 +1,103 @@
 <div class="uni-table" #tableContainer>
-<div class="uni-table-toolbar-container">
+  <div class="uni-table-header">
 
-  <ng-container *ngIf="getToolbarTemplate('toolbar') as customToolbar; else defaultToolbar">
-     
-     <ng-container *ngTemplateOutlet="customToolbar"></ng-container>
+    <!-- Zone A (Left) -->
+    <div class="uni-header-left">
+      @if (configS().paging !== false) {
+        <div class="uni-table__page-length">
+          <label class="uni-table__page-length-label">
+            Show
+            <select class="uni-table__page-length-select" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
+              <option [value]="5">5</option>
+              <option [value]="10">10</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+              <option [value]="100">100</option>
+            </select>
+            entries
+          </label>
+        </div>
+      }
+    </div>
+
+    <!-- Zone B (Right) -->
+    <div class="uni-header-right">
+
+      <!-- Default Search -->
+      <uni-search 
+         *ngIf="!configS().manualSearch" 
+         (searchTermChange)="onSearch($event)"
+         [placeholder]="'Search...'"><!-- TODO: from config -->
+      </uni-search>
   
-  </ng-container>
-
-
-  <ng-template #defaultToolbar>
-     <div class="uni-toolbar-standard">
-        
-        <div class="uni-toolbar-left">
-           <uni-search (searchTermChange)="onSearch($event)"></uni-search>
-           @if (configS().paging !== false) {
-             <div class="uni-table__page-length">
-               <label class="uni-table__page-length-label">
-                 Show
-                 <select class="uni-table__page-length-select" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
-                   <option [value]="5">5</option>
-                   <option [value]="10">10</option>
-                   <option [value]="25">25</option>
-                   <option [value]="50">50</option>
-                   <option [value]="100">100</option>
-                 </select>
-                 entries
-               </label>
-             </div>
-           }
+      <!-- User Actions Template -->
+      <ng-container *ngTemplateOutlet="getTemplate('actions')"></ng-container>
+  
+      <!-- Data-driven Actions -->
+      @if (dataConfigS().actions) {
+        @for (action of dataConfigS().actions; track action) {
+          <button
+            class="uni-table__button"
+            [ngClass]="action.class || 'uni-table__button--primary'"
+            (click)="action.onClick()"
+            [title]="action.label">
+            @if (action.icon) {
+              <i [class]="action.icon" [class.me-1]="!!action.label"></i>
+            }
+            {{ action.label }}
+          </button>
+        }
+      }
+  
+      <!-- Save/Reset Controls -->
+      <div *ngIf="configS().showSaveControls" class="uni-table__controls-group">
+        <button (click)="manualSave()" class="uni-table__button" title="Save View">
+          <i class="bi bi-save"></i>
+        </button>
+        <button (click)="resetView()" class="uni-table__button" title="Reset View">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+      </div>
+  
+      <!-- Column Visibility -->
+      @if (configS().colVis !== false) {
+        <div class="uni-table__colvis">
+          <button class="uni-table__colvis-button" type="button" (click)="toggleColVisMenu()">
+            <i class="bi bi-layout-three-columns"></i>
+          </button>
+          @if(showColVisMenu()) {
+            <ul class="uni-table__colvis-menu">
+              @for (col of dataConfigS().columns; track col.key; let i = $index) {
+                <li (click)="$event.stopPropagation()">
+                  <div class="uni-table__colvis-item">
+                    <input class="uni-table__colvis-checkbox" type="checkbox" [id]="'col-' + i"
+                           [checked]="!hiddenColumns().has(col.key)" (change)="toggleColumnVisibility(col.key)">
+                    <label class="uni-table__colvis-label" [for]="'col-' + i">
+                      {{ col.title }}
+                    </label>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
         </div>
+      }
 
-        <div class="uni-toolbar-right">
-           <ng-container *ngTemplateOutlet="getToolbarTemplate('actions')"></ng-container>
+      <!-- Context Menu -->
+      <div *ngIf="configS().showContextMenu" class="uni-context-menu-wrapper">
+        <button class="uni-table__button icon-button" (click)="toggleMenu()">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        @if (menuOpen()) {
+          <ul class="uni-dropdown-content">
+            <ng-container *ngTemplateOutlet="getTemplate('menuItems')"></ng-container>
+          </ul>
+        }
+      </div>
 
-           <!-- Custom Actions (from dataConfig) -->
-           @if (dataConfigS().actions) {
-             @for (action of dataConfigS().actions; track action) {
-               <button
-                 class="uni-table__button"
-                 [ngClass]="action.class || 'uni-table__button--primary'"
-                 (click)="action.onClick()"
-                 [title]="action.label">
-                 @if (action.icon) {
-                   <i [class]="action.icon" [class.me-1]="!!action.label"></i>
-                 }
-                 {{ action.label }}
-               </button>
-             }
-           }
-
-           <div *ngIf="configS().showSaveControls" class="uni-table__controls-group">
-             <button (click)="manualSave()" class="uni-table__button" title="Save View">
-               <i class="bi bi-save"></i>
-             </button>
-
-             <button (click)="resetView()" class="uni-table__button" title="Reset View">
-               <i class="bi bi-arrow-counterclockwise"></i>
-             </button>
-           </div>
-
-           <!-- ColVis -->
-           @if (configS().colVis !== false) {
-             <div class="uni-table__colvis">
-               <button class="uni-table__colvis-button" type="button" (click)="toggleColVisMenu()">
-                 <i class="bi bi-layout-three-columns"></i>
-               </button>
-               @if(showColVisMenu()) {
-                 <ul class="uni-table__colvis-menu">
-                   @for (col of dataConfigS().columns; track col.key; let i = $index) {
-                     <li (click)="$event.stopPropagation()">
-                       <div class="uni-table__colvis-item">
-                         <input class="uni-table__colvis-checkbox" type="checkbox" [id]="'col-' + i"
-                               [checked]="!hiddenColumns().has(col.key)" (change)="toggleColumnVisibility(col.key)">
-                         <label class="uni-table__colvis-label" [for]="'col-' + i">
-                           {{ col.title }}
-                         </label>
-                       </div>
-                     </li>
-                   }
-                 </ul>
-               }
-             </div>
-           }
-        </div>
-
-     </div>
-  </ng-template>
-
-</div>
+    </div>
+  
+  </div>
 
   <div class="uni-table__body" [class.uni-table__body--scroll]="configS().overflow === 'scroll'">
     <div class="uni-table__responsive-wrapper" [class.uni-table__responsive-wrapper--visible]="configS().overflow === 'responsive'">
