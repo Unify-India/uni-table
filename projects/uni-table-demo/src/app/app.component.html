@@ -9,9 +9,6 @@
 
     <ng-template uniTemplate="actions">
       <div class="input-group">
-        <span class="input-group-text">
-          <i class="bi bi-search"></i>
-        </span>
         <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange($event)">
       </div>
       <button class="btn btn-primary" (click)="addEntry()">
