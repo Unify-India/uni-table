@@ -104,12 +104,15 @@
   &__controls-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: .5rem;
   }
   
   &__button {
-    cursor: pointer;
-    line-height: 1.5;
+    cursor: pointer;    
+    width: fit-content; 
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: .5rem;
   }
 
   &__button--primary {
