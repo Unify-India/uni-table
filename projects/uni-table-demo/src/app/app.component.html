@@ -1,51 +1,11 @@
 <div class="container mt-4">
   <h1 class="mb-4">Uni Table Demo</h1>
-  
-  <uni-table 
-    [config]="tableConfig" 
-    [dataConfig]="dataConfig"
-    [externalState]="externalFilters"
-    (stateRestored)="restoreFilters($event)">
+  <h2>Client side table</h2>
 
-    <ng-template uniTemplate="actions">
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange($event)">
-      </div>
-      <button class="btn btn-primary" (click)="addEntry()">
-        <i class="bi bi-plus-circle"></i> Add Entry
-      </button>
-    </ng-template>
+  <app-client-side-table></app-client-side-table>
 
-    <ng-template uniTemplate="actionTpl" let-row="row">
-      <div class="btn-group btn-group-sm">
-        <button class="btn btn-outline-primary" (click)="edit(row)">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-outline-danger" (click)="delete(row)">
-          <i class="bi bi-trash"></i>
-        </button>
-      </div>
-    </ng-template>
+  <h2>Server side table</h2>
 
-    <ng-template uniTemplate="salaryTpl" let-value="value">
-      <span class="badge bg-success">Test {{ value | currency:'USD' }}</span>
-    </ng-template>
-
-    <ng-template uniTemplate="menuItems">
-      <li class="dropdown-item">
-        <i class="bi bi-file-earmark-excel me-2"></i>Export to Excel
-      </li>
-      <li class="dropdown-item">
-        <i class="bi bi-file-earmark-csv me-2"></i>Export to CSV
-      </li>
-      <li><hr class="dropdown-divider"></li>
-      <li class="dropdown-item">
-        <i class="bi bi-info-circle me-2"></i>About
-      </li>
-    </ng-template>
-
-  </uni-table>
-
-  <!-- Templates -->
+  <app-server-side-table></app-server-side-table>
 
 </div>
