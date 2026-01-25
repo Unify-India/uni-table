@@ -69,7 +69,7 @@ export class ClientSideTableComponent {
   get salaryCellStyle() {
     return (row: any, col: UniColumn) => {
       if (row.salary > 300000) {
-        return { 'background-color': 'var(--uni-color-red)', 'color': 'white' };
+        return { 'background-color': 'var(--uni-color-orange)', 'color': 'white' };
       }
       return { 'background-color': '', 'color': '' };
     };
