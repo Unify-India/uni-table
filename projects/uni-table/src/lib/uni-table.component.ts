@@ -93,11 +93,8 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   paginatedData = computed(() => {
     const options = this.configS();
-    if (options.paging === false) {
+    if (options.paging === false || options.serverSide) {
       return this.processedData();
-    }
-    if (this.currentPage() > this.totalPages()) {
-      this.currentPage.set(Math.max(1, this.totalPages()));
     }
     const startIndex = (this.currentPage() - 1) * this.pageSize();
     return this.processedData().slice(startIndex, startIndex + this.pageSize());
@@ -111,6 +108,18 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   private resizeObserver: ResizeObserver | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {
+    effect(() => {
+      const current = this.currentPage();
+      const total = this.totalPages();
+      if (total === 0) {
+          if (current !== 1) {
+              this.currentPage.set(1);
+          }
+      } else if (current > total) {
+          this.currentPage.set(total);
+      }
+    });
+
     effect(() => {
       const cfg = this.configS();
       const state: UniTableState = {
