@@ -32,6 +32,10 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   protected configS = signal<UniTableConfig>({});
   protected dataConfigS = signal<UniDataConfig>({ columns: [], data: [] });
 
+  public effectivePageLengthOptions = computed(() => {
+    return this.configS().pageLengthOptions || [5, 10, 25, 50, 100];
+  });
+
   public searchTerm = signal('');
   currentPage = signal(1);
   pageSize = signal(10);
@@ -140,21 +144,10 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   ngOnInit(): void {
-    const cfg = this.config;
-
-    this.configS.update(current => ({
-      colVis: true,
-      showSaveControls: true,
-      autoSaveState: true,
-      ...current
-    }));
+    // Initial setup of non-config-dependent signals is handled here.
+    // The main configS signal is set in ngOnChanges, which runs before ngOnInit.
     
-    this.pageSize.set(cfg.pageLength || 10);
-    if (cfg.defaultSort) {
-      this.sortColumn.set(cfg.defaultSort.column);
-      this.sortDirection.set(cfg.defaultSort.direction);
-    }
-
+    // Set initial hidden columns based on dataConfig
     const initialHidden = new Set<string>();
     this.dataConfig.columns.forEach(col => {
       if (col.visible === false) {
@@ -163,23 +156,32 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     });
     this.hiddenColumns.set(initialHidden);
 
-    if (cfg.responsive && !cfg.overflow) {
-      this.configS.update(current => ({...current, overflow: 'responsive'}));
+    // Now that configS is resolved, apply its values to other signals,
+    // respecting that localStorage might have already set them.
+    const cfg = this.configS();
+    
+    // Check if pageSize is still at its initial default before overriding with config
+    if (this.pageSize() === 10 && cfg.pageLength) {
+      this.pageSize.set(cfg.pageLength);
     }
-    if (!cfg.overflow) {
-      this.configS.update(current => ({...current, overflow: 'visible'}));
+
+    // Check if sortColumn is still at its initial default before overriding with config
+    if (this.sortColumn() === null && cfg.defaultSort) {
+      this.sortColumn.set(cfg.defaultSort.column);
+      this.sortDirection.set(cfg.defaultSort.direction);
     }
     
+    // Restore state from localStorage, which will override any defaults set above.
     if (cfg.storageKey) {
       const saved = localStorage.getItem(cfg.storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         
         this.searchTerm.set(parsed.searchTerm ?? '');
-        this.pageSize.set(parsed.pageSize ?? (cfg.pageLength || 10));
+        this.pageSize.set(parsed.pageSize ?? cfg.pageLength ?? 10);
         this.currentPage.set(parsed.currentPage ?? 1);
-        this.sortColumn.set(parsed.sort?.column ?? (cfg.defaultSort?.column || null));
-        this.sortDirection.set(parsed.sort?.direction ?? (cfg.defaultSort?.direction || 'asc'));
+        this.sortColumn.set(parsed.sort?.column ?? cfg.defaultSort?.column ?? null);
+        this.sortDirection.set(parsed.sort?.direction ?? cfg.defaultSort?.direction ?? 'asc');
         if (parsed.hiddenCols) {
           this.hiddenColumns.set(new Set(parsed.hiddenCols));
         }
@@ -193,7 +195,26 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['config']) {
-      this.configS.set(this.config);
+      const resolvedConfig: UniTableConfig = {
+        paging: true,
+        searching: true,
+        colVis: true,
+        pageLength: 10,
+        overflow: 'visible',
+        serverSide: false,
+        manualSearch: false,
+        showContextMenu: false,
+        autoSaveState: true,
+        showSaveControls: false,
+        pageLengthOptions: [5, 10, 25, 50, 100],
+        ...this.config
+      };
+
+      if (this.config.responsive === true && !this.config.overflow) {
+        resolvedConfig.overflow = 'responsive';
+      }
+
+      this.configS.set(resolvedConfig);
     }
     if (changes['dataConfig']) {
       this.dataConfigS.set(this.dataConfig);

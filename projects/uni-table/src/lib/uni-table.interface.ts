@@ -17,6 +17,7 @@ export interface UniTableConfig {
   defaultSort?: SortState; // Use new SortState interface
   manualSearch?: boolean;
   showContextMenu?: boolean;
+  pageLengthOptions?: number[];
 
   /**
    * PERSISTENCE SETTINGS

@@ -8,11 +8,9 @@
           <label class="uni-table__page-length-label">
             Show
             <select class="uni-table__page-length-select" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
-              <option [value]="5">5</option>
-              <option [value]="10">10</option>
-              <option [value]="25">25</option>
-              <option [value]="50">50</option>
-              <option [value]="100">100</option>
+              @for (option of effectivePageLengthOptions(); track option) {
+                <option [value]="option">{{ option }}</option>
+              }
             </select>
             entries
           </label>
