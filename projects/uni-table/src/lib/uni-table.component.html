@@ -59,7 +59,7 @@
   
       <!-- Column Visibility -->
       @if (configS().colVis !== false) {
-        <div class="uni-table__colvis">
+        <div class="uni-table__colvis" #colVisWrapper>
           <button class="uni-table__colvis-button" type="button" (click)="toggleColVisMenu()">
             <i class="bi bi-layout-three-columns"></i>
           </button>
@@ -82,7 +82,7 @@
       }
 
       <!-- Context Menu -->
-      <div *ngIf="configS().showContextMenu" class="uni-context-menu-wrapper">
+      <div *ngIf="configS().showContextMenu" class="uni-context-menu-wrapper" #contextMenuWrapper>
         <button class="uni-table__button icon-button" (click)="toggleMenu()">
           <i class="bi bi-three-dots-vertical"></i>
         </button>

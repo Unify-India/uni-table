@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, ViewChild, signal, computed, WritableSignal, effect, SimpleChanges, OnChanges, ContentChildren, QueryList, AfterContentInit, TemplateRef, ContentChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, ViewChild, signal, computed, WritableSignal, effect, SimpleChanges, OnChanges, ContentChildren, QueryList, AfterContentInit, TemplateRef, ContentChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UniTableConfig, UniDataConfig, UniTableState, UniColumn, SortState } from './uni-table.interface';
@@ -23,6 +23,8 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   @ViewChild('tableContainer') tableContainer!: ElementRef;
   @ViewChild('dataTable') dataTable!: ElementRef;
+  @ViewChild('colVisWrapper') colVisWrapper?: ElementRef;
+  @ViewChild('contextMenuWrapper') contextMenuWrapper?: ElementRef;
   @ContentChildren(UniTemplateDirective) templates!: QueryList<UniTemplateDirective>;
   @ContentChild(UniSearchComponent) manualSearchComponent?: UniSearchComponent;
   
@@ -49,6 +51,16 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   menuOpen = signal(false);
 
   draggedColumnIndex = signal<number | null>(null);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.showColVisMenu() && !this.colVisWrapper?.nativeElement.contains(event.target)) {
+      this.showColVisMenu.set(false);
+    }
+    if (this.menuOpen() && !this.contextMenuWrapper?.nativeElement.contains(event.target)) {
+      this.menuOpen.set(false);
+    }
+  }
 
   processedData = computed(() => {
     const options = this.configS();
@@ -351,10 +363,12 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   toggleColVisMenu() {
     this.showColVisMenu.update(v => !v);
+    this.menuOpen.set(false);
   }
 
   toggleMenu() {
     this.menuOpen.update(v => !v);
+    this.showColVisMenu.set(false);
   }
 
   toggleRowExpansion(index: number) {
