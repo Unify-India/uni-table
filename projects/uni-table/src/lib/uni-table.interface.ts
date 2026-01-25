@@ -5,8 +5,19 @@ export interface SortState {
   direction: 'asc' | 'desc';
 }
 
+export interface UniPagingControl {
+  firstLast?: boolean;
+  prevNext?: boolean;
+  type?: 'icons' | 'text';
+  firstText?: string;
+  lastText?: string;
+  prevText?: string;
+  nextText?: string;
+}
+
 export interface UniTableConfig {
   paging?: boolean;
+  pagingControls?: UniPagingControl;
   searching?: boolean;
   colVis?: boolean;
   pageLength?: number;

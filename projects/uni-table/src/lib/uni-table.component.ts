@@ -228,6 +228,16 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
         autoSaveState: true,
         showSaveControls: false,
         pageLengthOptions: [5, 10, 25, 50, 100],
+        pagingControls: { // Add default paging controls
+          firstLast: false,
+          prevNext: true,
+          type: 'icons',
+          firstText: 'First',
+          lastText: 'Last',
+          prevText: 'Previous',
+          nextText: 'Next',
+          ...this.config.pagingControls // Merge user-provided paging controls
+        },
         ...this.config
       };
 

@@ -211,12 +211,33 @@
         <div class="uni-table__pagination">
           <nav aria-label="Page navigation">
             <ul class="uni-table__pagination-list">
-              <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === 1">
-                <button class="uni-table__pagination-button" (click)="onPageChange(currentPage() - 1)" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </button>
-              </li>
+              <!-- First Button -->
+              @if (configS().pagingControls?.firstLast) {
+                <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === 1">
+                  <button class="uni-table__pagination-button" (click)="onPageChange(1)" aria-label="First">
+                    @if (configS().pagingControls?.type === 'icons') {
+                      <span aria-hidden="true">&laquo;&laquo;</span>
+                    } @else {
+                      <span>{{ configS().pagingControls?.firstText }}</span>
+                    }
+                  </button>
+                </li>
+              }
+
+              <!-- Previous Button -->
+              @if (configS().pagingControls?.prevNext) {
+                <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === 1">
+                  <button class="uni-table__pagination-button" (click)="onPageChange(currentPage() - 1)" aria-label="Previous">
+                    @if (configS().pagingControls?.type === 'icons') {
+                      <span aria-hidden="true">&laquo;</span>
+                    } @else {
+                      <span>{{ configS().pagingControls?.prevText }}</span>
+                    }
+                  </button>
+                </li>
+              }
               
+              <!-- Page Numbers -->
               @for (page of pages(); track page) {
                 <li class="uni-table__pagination-item" [class.is-active]="page === currentPage()">
                   @if (pages().length <= 7 || page === 1 || page === totalPages() || (page >= currentPage() - 1 && page <= currentPage() + 1)) {
@@ -229,11 +250,31 @@
                 </li>
               }
 
-              <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === totalPages()">
-                <button class="uni-table__pagination-button" (click)="onPageChange(currentPage() + 1)" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </button>
-              </li>
+              <!-- Next Button -->
+              @if (configS().pagingControls?.prevNext) {
+                <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === totalPages()">
+                  <button class="uni-table__pagination-button" (click)="onPageChange(currentPage() + 1)" aria-label="Next">
+                    @if (configS().pagingControls?.type === 'icons') {
+                      <span aria-hidden="true">&raquo;</span>
+                    } @else {
+                      <span>{{ configS().pagingControls?.nextText }}</span>
+                    }
+                  </button>
+                </li>
+              }
+
+              <!-- Last Button -->
+              @if (configS().pagingControls?.firstLast) {
+                <li class="uni-table__pagination-item" [class.is-disabled]="currentPage() === totalPages()">
+                  <button class="uni-table__pagination-button" (click)="onPageChange(totalPages())" aria-label="Last">
+                    @if (configS().pagingControls?.type === 'icons') {
+                      <span aria-hidden="true">&raquo;&raquo;</span>
+                    } @else {
+                      <span>{{ configS().pagingControls?.lastText }}</span>
+                    }
+                  </button>
+                </li>
+              }
             </ul>
           </nav>
         </div>
