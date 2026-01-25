@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UniTableComponent, UniTableConfig, UniDataConfig, UniColumn, UniTemplateDirective } from 'uni-table';
+import { UniTableConfig, UniDataConfig, UniColumn, UniTableComponent, UniTemplateDirective } from 'uni-table';
 
 @Component({
   selector: 'app-client-side-table',
