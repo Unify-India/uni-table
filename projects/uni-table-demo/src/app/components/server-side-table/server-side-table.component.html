@@ -1,24 +1,20 @@
 <div class="my-3">
-    <uni-table 
-        [config]="tableConfig" 
-        [dataConfig]="dataConfig"
-        (stateChange)="onStateChange($event)">
+	<uni-table [config]="tableConfig" [dataConfig]="dataConfig" (stateChange)="onStateChange($event)">
 
-        <ng-template uniTemplate="actionTpl" let-row="row">
-            <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-primary" (click)="edit(row)">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-outline-danger" (click)="delete(row)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </ng-template>
+		<ng-template uniTemplate="actionTpl" let-row="row">
+			<div class="btn-group btn-group-sm">
+				<button class="btn btn-outline-primary me-2" (click)="edit(row)">
+					<i class="bi bi-pencil"></i>
+				</button>
+				<button class="btn btn-outline-danger" (click)="delete(row)">
+					<i class="bi bi-trash"></i>
+				</button>
+			</div>
+		</ng-template>
 
-        <ng-template uniTemplate="salaryTpl" let-value="value">
-            <span class="badge bg-info text-dark">{{ value | currency:'USD' }}</span>
-        </ng-template>
+		<ng-template uniTemplate="salaryTpl" let-value="value">
+			<span class="badge bg-info text-dark">{{ value | currency:'USD' }}</span>
+		</ng-template>
 
-    </uni-table>
+	</uni-table>
 </div>
-

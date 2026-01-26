@@ -32,7 +32,7 @@
   --uni-control-focus-border-color: #86b7fe;
   --uni-control-padding-y: 0.25rem;
   --uni-control-padding-x: 0.5rem;
-  
+
   // Button variables
   --uni-button-primary-bg: #0d6efd;
   --uni-button-primary-color: #fff;
@@ -65,12 +65,13 @@
     background-color: var(--uni-hf-bg);
     padding: var(--uni-hf-padding);
   }
-  
+
   &__footer {
     border-top: 1px solid var(--uni-border);
   }
 
-  &__header-row, &__footer-row {
+  &__header-row,
+  &__footer-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -89,11 +90,14 @@
   &__button,
   &__colvis-button {
     padding: var(--uni-control-padding-y) var(--uni-control-padding-x);
-    font-size: 0.875em;
+    font-size: 0.9rem;
     border-radius: 0.25rem;
     border: 1px solid var(--uni-control-border-color);
     background-color: var(--uni-control-bg);
     color: var(--uni-control-text-color);
+    align-items: center;
+    height: 36px;
+    cursor: pointer;
     &:focus {
       outline: 0;
       border-color: var(--uni-control-focus-border-color);
@@ -104,15 +108,15 @@
   &__controls-group {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: 0.4rem;
   }
-  
+
   &__button {
-    cursor: pointer;    
-    width: fit-content; 
+    cursor: pointer;
+    width: fit-content;
     display: inline-flex;
     flex-wrap: nowrap;
-    gap: .5rem;
+    gap: 0.4rem;
   }
 
   &__button--primary {
@@ -133,7 +137,7 @@
     color: #6c757d;
     pointer-events: none;
   }
-  
+
   &__search-input {
     padding-left: 2rem;
   }
@@ -161,9 +165,9 @@
   &__colvis-item {
     display: flex;
     align-items: center;
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem;
   }
-  
+
   &__colvis-checkbox {
     margin-right: 0.5rem;
   }
@@ -194,7 +198,8 @@
     color: var(--uni-table-head-color);
   }
 
-  &__th, &__td {
+  &__th,
+  &__td {
     padding: var(--uni-table-cell-padding-y) var(--uni-table-cell-padding-x);
     border-top: 1px solid var(--uni-border);
     vertical-align: middle;
@@ -228,7 +233,7 @@
       }
     }
   }
-  
+
   &__tr {
     &:nth-of-type(odd) {
       background-color: var(--uni-table-striped-bg);
@@ -237,7 +242,7 @@
       background-color: var(--uni-table-hover-bg);
     }
   }
-  
+
   &__td--expander {
     text-align: center;
   }
@@ -278,12 +283,12 @@
   &__details-value {
     margin-left: 0.5rem;
   }
-  
+
   &__empty-message {
     text-align: center;
     padding: 2rem;
   }
-  
+
   &__summary {
     font-size: 0.875em;
     color: var(--uni-hf-text-color);
@@ -311,8 +316,9 @@
       border-color: var(--uni-border);
     }
   }
-  
-  &__pagination-button, &__pagination-ellipsis {
+
+  &__pagination-button,
+  &__pagination-ellipsis {
     position: relative;
     display: block;
     padding: var(--uni-pagination-padding-y) var(--uni-pagination-padding-x);
@@ -321,21 +327,26 @@
     text-decoration: none;
     background-color: var(--uni-bg);
     border: 1px solid var(--uni-border);
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition:
+      color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out,
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
     cursor: pointer;
   }
-  
+
   &__pagination-list {
     .uni-table__pagination-item:first-child .uni-table__pagination-button {
-      border-top-left-radius: .25rem;
-      border-bottom-left-radius: .25rem;
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
     }
-    .uni-table__pagination-item:not(:first-child) .uni-table__pagination-button {
+    .uni-table__pagination-item:not(:first-child)
+      .uni-table__pagination-button {
       margin-left: -1px;
     }
     .uni-table__pagination-item:last-child .uni-table__pagination-button {
-      border-top-right-radius: .25rem;
-      border-bottom-right-radius: .25rem;
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
     }
   }
 
@@ -362,7 +373,7 @@
 .uni-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.4rem;
 }
 
 .uni-context-menu-wrapper {
@@ -394,6 +405,6 @@
 .uni-header__label--wrap {
   white-space: normal; /* Allow wrapping */
   overflow: visible;
-  line-height: 1.2;    /* Tighter line height for multi-line */
-  padding-right: 4px;  /* Ensure text doesn't touch the icon */
+  line-height: 1.2; /* Tighter line height for multi-line */
+  padding-right: 4px; /* Ensure text doesn't touch the icon */
 }

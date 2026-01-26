@@ -1,6 +1,9 @@
-.btn-primary{
-    width: fit-content; 
-    flex-wrap: nowrap;
-    display: inline-flex;
-    gap: .5rem;
+.btn-primary {
+  width: fit-content;
+  flex-wrap: nowrap;
+  display: inline-flex;
+  gap: 0.5rem;
+}
+.btn {
+  max-height: 36px;
 }

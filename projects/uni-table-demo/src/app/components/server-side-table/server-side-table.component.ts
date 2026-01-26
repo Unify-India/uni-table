@@ -19,11 +19,20 @@ export class ServerSideTableComponent implements OnInit {
     searching: true,
     colVis: true,
     pageLength: 5,
+    pagingControls: {
+      firstLast: true,
+      prevNext: true,
+      type: 'text',
+      firstText: 'First',
+      lastText: 'Last',
+      prevText: 'Prev',
+      nextText: 'Next'
+    },
     overflow: 'responsive',
     storageKey: 'uni_table_server_state',
     autoSaveState: true,
     showSaveControls: true,
-    showContextMenu: true,
+    showContextMenu: false,
   };
 
   dataConfig: UniDataConfig = {
@@ -41,7 +50,7 @@ export class ServerSideTableComponent implements OnInit {
     totalRecords: 0,
   };
 
-  constructor(private readonly tableService: TableService) {}
+  constructor(private readonly tableService: TableService) { }
 
   ngOnInit(): void {
     // Initial data load can be triggered here if needed,
