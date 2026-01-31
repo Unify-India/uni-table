@@ -1,161 +1,107 @@
 # Uni-Table
 
-`uni-table` is a feature-rich, reusable Angular data table library designed to be a blend of DataTables.net and Material Design principles. It provides a flexible and powerful way to display tabular data.
+[![npm version](https://img.shields.io/npm/v/uni-table.svg)](https://www.npmjs.com/package/@unify-india/uni-table)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+**Uni-Table** is a powerful, modern, and highly configurable data table for Angular, built from the ground up with Signals for peak performance and reactivity. It's designed to be a flexible and feature-rich solution for displaying tabular data.
 
-### **`uni-table` Feature Highlights**
+---
 
-*   **Signal-First Architecture:** Leverages Angular 19 `signal` inputs and `computed()` properties for sorting, pagination, and filtering, ensuring optimal `OnPush` performance and instant UI updates.
-*   **Reactive Column Visibility (ColVis):** Implements column toggling via reactive signals rather than array mutation, allowing for instant, flicker-free showing and hiding of columns without re-rendering the entire table.
-*   **Hybrid Responsiveness (Smart Collapse):** Utilizes `ResizeObserver` to automatically detect container width and move overflowing columns into an expandable "child row" (accordion style), eliminating horizontal scrolling on mobile.
-*   **Config-Driven Template Injection:** Enables users to map custom UI templates (like action buttons) to columns using simple string IDs in the JSON config, keeping the table logic completely decoupled from user component logic.
-*   **Decoupled Translation Support:** Includes a built-in, config-toggleable translation pipe (via `InjectionToken`) that handles header localization without requiring complex external dependencies or class overrides.
-*   **Modern CSS Variable Theming:** Exposes a full suite of CSS Custom Properties (e.g., `--uni-header-bg`) for effortless theming that pierces Shadow DOM boundaries without using `::ng-deep`.
-*   **Encapsulation-Free Customization:** Uses `ViewEncapsulation.None` with strict BEM-style naming (e.g., `.uni-table__row`) to allow users to easily override default styles using standard CSS classes.
-*   **Dynamic Class Injection:** Supports conditional styling by allowing users to inject custom class names for specific headers or cells directly via the column configuration (e.g., `{ cellClass: 'status-error' }`).
+**[➡️ View Live Demo](https://YOUR_DEMO_URL_HERE)**
 
-## Getting Started
+---
 
-1.  **Installation**
+![uni-table screenshot](https://YOUR_SCREENSHOT_URL_HERE)
 
-    ```bash
-    npm install uni-table
-    ```
+## Key Features
 
-2.  **Import the component**
+*   🚀 **Signal-First Architecture:** Built with Angular Signals for ultra-fast, glitch-free UI updates for sorting, pagination, and filtering.
+*   📱 **Advanced Responsiveness:** Automatically hides columns that don't fit and moves them into an expandable child row, preventing horizontal scrollbars on smaller screens.
+*   👁️ **Reactive Column Visibility:** Instantly show or hide columns with a built-in menu, without re-rendering the entire table.
+*   🔧 **Configuration-Driven:** Define columns, behavior, and custom templates through simple JSON configuration.
+*   🎨 **Easy Customization:** Inject custom templates for cells and headers, and control pagination UI elements with simple options.
+*   🌐 **Client & Server-Side Data:** Works seamlessly with both local data arrays and remote APIs for pagination, sorting, and searching.
 
-    Since `UniTableComponent` is a standalone component, you can import it directly into your component's `imports` array.
+## Installation
 
-    ```typescript
-    import { UniTableComponent } from 'uni-table';
+```bash
+npm install uni-table
+```
 
-    @Component({
-      // ...
-      imports: [CommonModule, UniTableComponent],
-    })
-    export class YourComponent {}
-    ```
+Since `UniTableComponent` is a standalone component, import it directly into your component's `imports` array:
 
-3.  **Use in your template**
+```typescript
+// your.component.ts
+import { UniTableComponent } from 'uni-table';
 
-    ```html
-    <uni-table [dtOptions]="dtOptions" [dataConfig]="dataConfig">
-    </uni-table>
-    ```
+@Component({
+  // ...
+  imports: [CommonModule, UniTableComponent],
+})
+export class YourComponent {}
+```
 
-## API
+## Basic Usage
 
-### Inputs
+Provide a configuration object and your data to the component.
+
+```html
+<!-- your.component.html -->
+<uni-table [dtOptions]="dtOptions" [dataConfig]="dataConfig">
+</uni-table>
+```
+
+```typescript
+// your.component.ts
+import { Component } from '@angular/core';
+import { UniDataConfig, UniDtOptions } from 'uni-table';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+})
+export class AppComponent {
+  dtOptions: UniDtOptions = {
+    paging: true,
+    searching: true,
+    colVis: true,
+  };
+
+  dataConfig: UniDataConfig = {
+    columns: [
+      { key: 'id', title: 'ID' },
+      { key: 'name', title: 'Name' },
+      { key: 'email', title: 'Email' },
+    ],
+    data: [
+      { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
+      { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
+    ],
+  };
+}
+```
+
+## API Reference
+
+_(For detailed interface definitions, please see `uni-table.interface.ts`)_
+
+### Component Inputs
 
 | Name         | Type            | Description                                                                                                                                                                                          |
 | :----------- | :-------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dtOptions`  | `UniDtOptions`  | An object containing options to configure the table's features, such as pagination, searching, and state saving. See the `UniDtOptions` interface for more details.                                |
 | `dataConfig` | `UniDataConfig` | An object that defines the table's columns and provides the data to be displayed. It can also include custom toolbar actions. See the `UniDataConfig` interface for more details. |
 
-### Outputs
+### Component Outputs
 
 | Name          | Type                           | Description                                                                                              |
 | :------------ | :----------------------------- | :------------------------------------------------------------------------------------------------------- |
 | `stateChange` | `EventEmitter<UniTableState>` | Emits an event whenever the table's state changes (e.g., pagination, sorting, searching). The emitted event contains the current state of the table. |
 
----
+## Contributing
 
-## Interfaces
+Contributions are welcome! Please open an issue or submit a pull request.
 
-### UniDtOptions
+## License
 
-```typescript
-export interface UniDtOptions {
-  paging?: boolean;
-  searching?: boolean;
-  colVis?: boolean;
-  pageLength?: number;
-  responsive?: boolean; // Deprecated, use overflow
-  overflow?: 'scroll' | 'responsive' | 'visible';
-  saveState?: boolean;
-  stateSaveKey?: string;
-  serverSide?: boolean;
-  onStateChange?: (state: UniTableState) => void;
-  defaultSort?: { column: string; direction: 'asc' | 'desc' };
-}
-```
-
-### UniDataConfig
-
-```typescript
-export interface UniDataConfig {
-  columns: UniColumn[];
-  data: any[];
-  totalRecords?: number; // Required for server-side pagination
-  actions?: UniAction[];
-}
-```
-
-### UniColumn
-
-```typescript
-export interface UniColumn {
-  key: string;
-  title: string;
-  width?: string;
-  minWidth?: string;
-  visible?: boolean;
-  orderable?: boolean;
-  searchable?: boolean;
-  priority?: number; // Higher number = higher priority (less likely to be hidden)
-  headerClass?: string;
-  cellClass?: string;
-  cellTemplate?: TemplateRef<any>;
-}
-```
-
-### UniAction
-
-```typescript
-export interface UniAction {
-  label: string;
-  icon?: string;
-  class?: string;
-  onClick: () => void;
-}
-```
-
-### UniTableState
-
-```typescript
-export interface UniTableState {
-  searchTerm: string;
-  pageSize: number;
-  sortColumn: string | null;
-  sortDirection: 'asc' | 'desc';
-  currentPage: number;
-  hiddenColumns: string[];
-}
-```
-
----
-
-## Building
-
-To build the library, run:
-
-```bash
-ng build uni-table
-```
-
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
-
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1.  Navigate to the `dist` directory:
-    ```bash
-    cd dist/uni-table
-    ```
-
-2.  Run the `npm publish` command to publish your library to the npm registry:
-    ```bash
-    npm publish
-    ```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

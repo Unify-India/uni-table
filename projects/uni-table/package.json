@@ -1,6 +1,33 @@
 {
-  "name": "uni-table",
-  "version": "0.0.1",
+  "name": "@unify-india/uni-table",
+  "version": "0.1.1",
+  "description": "A powerful, modern, and highly configurable data table for Angular, built from the ground up with Signals for peak performance and reactivity.",
+  "author": {
+    "name": "Unify India | IAM5K",
+    "email": "developers.unify@gmil.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Unify-India/uni-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Unify-India/uni-table/issues"
+  },
+  "homepage": "https://github.com/Unify-India/uni-table#readme",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "table",
+    "datatable",
+    "data-table",
+    "grid",
+    "angular-table",
+    "angular-component",
+    "signals",
+    "angular-signals",
+    "responsive-table",
+    "configurable-table"
+  ],
   "peerDependencies": {
     "@angular/common": "^19.2.0",
     "@angular/core": "^19.2.0",
