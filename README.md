@@ -178,6 +178,15 @@ We want to make this the best data table for Angular!
 *   **Have a feature request?** We'd love to hear your ideas.
 *   **Want to contribute?** PRs are welcome! Check out our [Contributing Guidelines](CONTRIBUTING.md).
 
+## 👥 Core Team & Contributors
+
+This project is maintained by the **Unify India** community. We thank all our contributors for their hard work and dedication!
+
+*   **[Unify India](https://github.com/Unify-India)** - Organization
+*   **[Sandeep Kumar (IAM5K)](https://github.com/IAM5K)** - Lead Developer
+*   **[Anupam Bharti](https://github.com/iamanupambharti)** - Contributor
+*   **[DevsOfUnify](https://github.com/DevsOfUnify)** - Contributor
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
