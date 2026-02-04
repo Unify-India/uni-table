@@ -83,6 +83,24 @@ Uni-Table isn't just another data grid; it's a complete toolkit for building dat
     *   **Global Search:** Out-of-the-box text search that filters across all your columns.
     *   **Manual Control:** Need to trigger search from an external input or clear it programmatically? The `manualSearch` API puts you in the driver's seat.
 
+## 🎨 Effortless Styling with CSS Variables
+
+Say goodbye to `::ng-deep` and complex CSS selectors. Uni-Table is built with a modern **variable-based styling mechanism**. You can directly update the design of the entire table by simply overriding CSS variables in your component's CSS or global styles.
+
+```css
+/* Customize your table globally or per component */
+uni-table {
+  --uni-primary-color: #6366f1;
+  --uni-bg: #ffffff;
+  --uni-table-striped-bg: #f8fafc;
+  --uni-border-radius: 12px;
+  --uni-font-family: 'Inter', sans-serif;
+  --uni-table-head-bg: #f1f5f9;
+}
+```
+
+This approach gives you complete control over the look and feel while keeping your stylesheets clean and maintainable.
+
 ## 🚀 Quick Start
 
 Define your options and data configuration:
