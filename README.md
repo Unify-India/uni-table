@@ -1,82 +1,123 @@
-# UniWorkspace
+# Uni-Table
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+[![npm version](https://img.shields.io/npm/v/uni-table.svg)](https://www.npmjs.com/package/@unify-india/uni-table)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Development server
+**Uni-Table** is a powerful, modern, and highly configurable data table for Angular, built from the ground up with Signals for peak performance and reactivity. It's designed to be a flexible and feature-rich solution for displaying tabular data.
 
-To start a local development server, run:
+---
+
+**[➡️ View Live Demo](https://stackblitz.com/edit/uni-table)**
+
+---
+
+![uni-table screenshot](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/client-side-table.png)
+
+![uni-table screenshot](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/server-side-table.png)
+
+## Key Features
+
+*   🚀 **Signal-First Architecture:** Built with Angular Signals for ultra-fast, glitch-free UI updates for sorting, pagination, and filtering.
+*   📱 **Advanced Responsiveness:** Automatically hides columns that don't fit and moves them into an expandable child row, preventing horizontal scrollbars on smaller screens.
+*   👁️ **Reactive Column Visibility:** Instantly show or hide columns with a built-in menu, without re-rendering the entire table.
+*   🔧 **Configuration-Driven:** Define columns, behavior, and custom templates through simple JSON configuration.
+*   🎨 **Easy Customization:** Inject custom templates for cells and headers, and control pagination UI elements with simple options.
+*   🌐 **Client & Server-Side Data:** Works seamlessly with both local data arrays and remote APIs for pagination, sorting, and searching.
+
+## Installation
+
+```bash
+npm install uni-table
+```
+
+Since `UniTableComponent` is a standalone component, import it directly into your component's `imports` array:
+
+```typescript
+// your.component.ts
+import { UniTableComponent } from 'uni-table';
+
+@Component({
+  // ...
+  imports: [CommonModule, UniTableComponent],
+})
+export class YourComponent {}
+```
+
+## Basic Usage
+
+Provide a configuration object and your data to the component.
+
+```html
+<!-- your.component.html -->
+<uni-table [dtOptions]="dtOptions" [dataConfig]="dataConfig">
+</uni-table>
+```
+
+```typescript
+// your.component.ts
+import { Component } from '@angular/core';
+import { UniDataConfig, UniDtOptions } from 'uni-table';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+})
+export class AppComponent {
+  dtOptions: UniDtOptions = {
+    paging: true,
+    searching: true,
+    colVis: true,
+  };
+
+  dataConfig: UniDataConfig = {
+    columns: [
+      { key: 'id', title: 'ID' },
+      { key: 'name', title: 'Name' },
+      { key: 'email', title: 'Email' },
+    ],
+    data: [
+      { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
+      { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
+    ],
+  };
+}
+```
+
+## Documentation
+
+For more detailed documentation, including API references and advanced configuration, please refer to the [Library Documentation](projects/uni-table/README.md).
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Development
+
+This repository is a monorepo containing the `uni-table` library and a demo application.
+
+### Prerequisites
+
+- Node.js
+- Angular CLI
+
+### Build the Library
+
+```bash
+ng build uni-table
+```
+
+### Run the Demo App
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Running Tests
 
 ```bash
-ng generate component component-name
+ng test uni-table
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## License
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-
----
-
-## Uni-Table Library
-
-`uni-table` is a feature-rich, reusable Angular data table library designed to be a blend of DataTables.net and Material Design principles. It provides a flexible and powerful way to display tabular data.
-
-### Features
-
--   **Configurable UI:** Toggle features like pagination, global search, and column visibility to fit your needs.
--   **Data Sources:** Works with both client-side (local) and server-side (remote) data.
--   **Pagination:** Full pagination support, including controls for page navigation and customizable page size.
--   **Sorting:** Sort data by any column in either ascending or descending order.
--   **Filtering:** Provides a global search input to filter data across all searchable columns.
--   **Column Management:**
-    -   **Visibility:** Users can interactively show and hide columns.
-    -   **Responsiveness:** Define column priorities to automatically hide less important columns on smaller screens. Hidden data is accessible through an expandable details row.
-    -   **Reordering:** End-users can reorder columns using drag-and-drop.
--   **State Persistence:** Automatically saves the table's state (including sorting, pagination, and column visibility) to local storage and restores it on reload.
--   **Customization:**
-    -   **Cell Templates:** Use `ng-template` to provide completely custom layouts for individual cells.
-    -   **Toolbar Actions:** Add custom buttons and actions, such as "Export" or "Add New", to the table's header.
--   **Styling:** Built on Bootstrap 5 for a modern, responsive design that is easy to customize and theme.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
