@@ -7,11 +7,14 @@
 
 ---
 
-**[➡️ View Live Demo](https://YOUR_DEMO_URL_HERE)**
+**[➡️ View Live Demo](https://stackblitz.com/edit/uni-table)**
 
 ---
 
-![uni-table screenshot](https://YOUR_SCREENSHOT_URL_HERE)
+![uni-table screenshot](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/client-side-table.png)
+
+
+![uni-table screenshot](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/server-side-table.png)
 
 ## Key Features
 
