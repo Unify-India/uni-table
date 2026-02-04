@@ -1,6 +1,7 @@
 # Uni-Table
 
 [![npm version](https://img.shields.io/npm/v/@unify-india/uni-table.svg)](https://www.npmjs.com/package/@unify-india/uni-table)
+[![npm downloads](https://img.shields.io/npm/dm/@unify-india/uni-table.svg)](https://www.npmjs.com/package/@unify-india/uni-table)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **Uni-Table** is a powerful, modern, and highly configurable data table for Angular, built from the ground up with **Signals** for peak performance and reactivity. It is designed to be a flexible, feature-rich, and developer-friendly solution for displaying tabular data in enterprise applications.
