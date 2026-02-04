@@ -36,9 +36,11 @@ export class YourComponent {}
 
 ## 📊 Version Compatibility
 
+> **Note:** The current version (`0.1.1`) is considered a **beta release**. Once we receive sufficient feedback and confirmation from our users, we will transition to a versioning scheme that aligns directly with Angular's major and minor versions (e.g., `@unify-india/uni-table` version `19.2.x` will target Angular `19.2.x`).
+
 | Angular Version | Uni-Table Version |
 | :--- | :--- |
-| **Angular 19+** | `0.1.1` |
+| **Angular 19+** | `0.1.1` (Beta) |
 | **Angular 20** | *Coming Soon* |
 | **Angular 21** | *Coming Soon* |
 
