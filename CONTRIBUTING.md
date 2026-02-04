@@ -45,6 +45,28 @@ We will then take care of the issue as soon as possible.
 
 ## I Want To Contribute
 
+### Project Setup
+
+This project is a monorepo containing the `uni-table` library and a demo application. To get started:
+
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+
+2.  **Build the Library:**
+    Before serving the demo app, you must build the library so that it can be consumed.
+    ```bash
+    ng build uni-table
+    ```
+
+3.  **Run the Demo Application:**
+    Start the local development server. This will serve the `uni-table-demo` project.
+    ```bash
+    ng serve
+    ```
+    Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+
 ### Reporting Bugs
 
 <!-- Omitted: "Before Submitting a Bug Report" section -->
