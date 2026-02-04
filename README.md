@@ -44,32 +44,44 @@ export class YourComponent {}
 
 ## ✨ Key Features
 
-Uni-Table comes packed with features to handle complex data grids with ease.
+Uni-Table isn't just another data grid; it's a complete toolkit for building data-rich interfaces that your users will love.
 
-*   **🚀 Signal-First Architecture**
-    Built entirely using Angular Signals to ensure ultra-fast, fine-grained reactivity. This means UI updates for sorting, pagination, and filtering happen instantly without unnecessary change detection cycles, resulting in a glitch-free user experience.
+*   **🚀 Signal-First Architecture: Speed by Design**
+    Forget about sluggish UI updates. Built entirely on Angular Signals, Uni-Table delivers ultra-fast, fine-grained reactivity. Sorting, paging, and filtering happen instantly, ensuring a buttery-smooth 60fps experience even with complex data interactions.
 
-*   **📱 Advanced Responsiveness**
-    Handling wide tables on small screens is effortless. The table automatically detects when columns don't fit and moves them into an expandable child row ("details view"). You can control which columns stay visible using the `priority` property in your column config.
+*   **🎨 Your Pagination, Your Rules**
+    Why settle for generic controls?
+    *   **Fully Customizable:** Choose between text labels ("Previous", "Next"), intuitive icons, or both.
+    *   **Flexible Navigation:** Decide exactly which controls to show—First/Last, Previous/Next—tailoring the experience to your design system.
 
-*   **👁️ Reactive Column Visibility (`colVis`)**
-    Empower your users to control their view. The built-in Column Visibility menu allows users to toggle columns on or off instantly. This is handled reactively without re-rendering the entire table DOM.
+*   **📱 Advanced Responsiveness: Mobile-Ready Instantly**
+    Don't let wide tables break your mobile layout.
+    *   **Smart Collapse:** Columns that don't fit are automatically tucked away into an expandable "details view."
+    *   **Priority Control:** You decide what matters most. Use the `priority` setting to ensure critical columns stay visible on smaller screens while secondary data gracefully yields space.
 
-*   **💾 Smart State Persistence**
-    Don't lose context on reload. Uni-Table can automatically save the user's state (current page, page size, sort order, search term, and hidden columns) to local storage. Configure `storageKey` and `autoSaveState` to enable this seamless experience.
+*   **👁️ Reactive Column Visibility: User-Centric Control**
+    Empower your users to curate their own view. The built-in, reactive `colVis` menu lets users instantly toggle columns on or off. No page reloads, no heavy DOM re-rendering—just instant personalization.
 
-*   **🌐 Universal Data Handling (Client & Server)**
-    Whether you have a simple local array or a massive dataset on the server, Uni-Table handles it.
-    *   **Client-Side:** Pass the data array, and the table handles sorting, searching, and paging automatically.
-    *   **Server-Side:** Set `serverSide: true` and hook into the `stateChange` output to fetch data dynamically based on the current table state.
+*   **💾 Intelligent State Persistence**
+    Users hate losing their place. With `autoSaveState`, Uni-Table remembers everything:
+    *   Current page & page size
+    *   Sort order & direction
+    *   Search terms
+    *   Hidden/Visible columns
+    *   *Result:* Users pick up exactly where they left off, every time.
 
-*   **🎨 Deep Customization**
-    *   **Templates:** Use `ng-template` to render custom content for any cell (images, buttons, status badges).
-    *   **Styling:** Configurable classes for headers and cells.
-    *   **Pagination:** Customize text, icons, and layout of pagination controls.
+*   **🌐 Universal Data Handling: Client or Server? Yes.**
+    *   **Client-Side Agility:** Pass a local array, and let Uni-Table handle the heavy lifting—sorting, searching, and pagination are automatic.
+    *   **Server-Side Power:** dealing with millions of records? Flip the `serverSide` switch. Hook into the `stateChange` event to fetch exactly what you need, when you need it.
 
-*   **🔍 Powerful Searching & Filtering**
-    Includes a built-in global search box that filters across all searchable columns. For more control, `manualSearch` allows you to trigger searches programmatically or via external inputs.
+*   **🔧 Pixel-Perfect Column Control**
+    *   **Precise Layouts:** Define exact `width` and `minWidth` to ensure your data breathes.
+    *   **Rich Content:** Inject custom `ng-template`s for any cell. Render status badges, action buttons, user avatars, or complex components with ease.
+    *   **Styling Freedom:** Apply custom classes and styles to headers and cells dynamically based on data.
+
+*   **🔍 Powerful, Flexible Search**
+    *   **Global Search:** Out-of-the-box text search that filters across all your columns.
+    *   **Manual Control:** Need to trigger search from an external input or clear it programmatically? The `manualSearch` API puts you in the driver's seat.
 
 ## 🚀 Quick Start
 
