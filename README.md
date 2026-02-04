@@ -1,4 +1,4 @@
-# Uni-Table
+# Uni-Table: High-Performance Angular Data Table with Signals
 
 [![npm version](https://img.shields.io/npm/v/@unify-india/uni-table.svg)](https://www.npmjs.com/package/@unify-india/uni-table)
 [![npm downloads](https://img.shields.io/npm/dm/@unify-india/uni-table.svg)](https://www.npmjs.com/package/@unify-india/uni-table)
@@ -12,14 +12,28 @@
 
 ---
 
-![uni-table screenshot](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/client-side-table.png)
-![uni-table screenshot](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/server-side-table.png)
+## 📚 Table of Contents
+
+- [Introduction](#uni-table-high-performance-angular-data-table-with-signals)
+- [Visual Tour](#-visual-tour-features-in-action)
+- [Installation](#-installation)
+- [Version Compatibility](#-version-compatibility)
+- [Key Features](#-key-features)
+- [Styling & Theming](#-effortless-styling-with-css-variables)
+- [Quick Start](#-quick-start)
+- [Documentation](#-detailed-documentation)
+- [Contributing](#-contributing--feedback)
+
+---
+
+![Uni-Table Client-Side Data Grid with Pagination and Search](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/client-side-table.png)
+![Uni-Table Server-Side Data Grid](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/server-side-table.png)
 
 ### 🎨 Visual Tour: Features in Action
 
 What you see in the screenshots above isn't just a static table—it's a high-performance data engine in action:
 
-1.  **Dynamic Header Controls:** Take full command of your table's toolbar. Seamlessly toggle features like **Export**, **Global Search**, and **Column Visibility (`colVis`)**. You can even enable a **Context Menu** for quick client-side actions (can be seen in client-side mode).
+1.  **Dynamic Header Controls:** Take full command of your table's toolbar. Seamlessly toggle features like **Export**, **Global Search**, and **Column Visibility (`colVis`)**. You can even enable a **Context Menu** for quick client-side actions (available in client-side mode).
 2.  **Smart Conditional Highlighting:** Visualize your data's meaning at a glance. Easily apply conditional styling—like the orange cell highlights shown—to draw attention to critical values or specific data states without complex CSS hacks.
 3.  **Rich Custom Templates:** Go beyond simple text. Inject custom `ng-template`s to render interactive **Action columns**, formatted **Pricing**, status badges, or even complex nested components.
 
@@ -48,10 +62,10 @@ export class YourComponent {}
 > **Note:** The current version (`0.1.1`) is considered a **beta release**. Once we receive sufficient feedback and confirmation from our users, we will transition to a versioning scheme that aligns directly with Angular's major and minor versions (e.g., `@unify-india/uni-table` version `19.2.x` will target Angular `19.2.x`).
 
 | Angular Version | Uni-Table Version |
-| :-------------- | :---------------- |
-| **Angular 19+** | `0.1.1` (Beta)    |
-| **Angular 20**  | *Coming Soon*     |
-| **Angular 21**  | *Coming Soon*     |
+| :--- | :--- |
+| **Angular 19+** | `0.1.1` (Beta) |
+| **Angular 20** | *Coming Soon* |
+| **Angular 21** | *Coming Soon* |
 
 ## ✨ Key Features
 
