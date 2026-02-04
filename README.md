@@ -4,11 +4,11 @@
 [![npm downloads](https://img.shields.io/npm/dm/@unify-india/uni-table.svg)](https://www.npmjs.com/package/@unify-india/uni-table)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Uni-Table** is a powerful, modern, and highly configurable data table for Angular, built from the ground up with **Signals** for peak performance and reactivity. It is designed to be a flexible, feature-rich, and developer-friendly solution for displaying tabular data in enterprise applications.
+**Uni-Table** is a next-generation data grid for Angular, re-engineered with **Signals** to deliver zero-lag performance. It combines enterprise-grade features—like server-side processing and complex filtering—with a developer-friendly configuration API, making it the ideal choice for building responsive, data-heavy applications.
 
 ---
 
-**[➡️ View Live Demo](https://stackblitz.com/edit/uni-table)**
+**[✨ Explore the Interactive Demo on StackBlitz](https://stackblitz.com/edit/uni-table)**
 
 ---
 
@@ -171,12 +171,18 @@ This README provides a high-level overview. For a comprehensive guide on impleme
 
 ## 🤝 Contributing & Feedback
 
-We want to make this the best data table for Angular!
+We want to make this the best data table for Angular, and your input is vital! Whether you've found a bug, have a feature idea, or want to contribute code, we're all ears.
 
 *   **Try it out:** Install it in your project and let us know what you think.
-*   **Found a bug?** Please [Open an Issue](https://github.com/Unify-India/uni-table/issues).
-*   **Have a feature request?** We'd love to hear your ideas.
-*   **Want to contribute?** PRs are welcome! Check out our [Contributing Guidelines](CONTRIBUTING.md).
+*   **Issues:** Found a bug? Please [Open an Issue](https://github.com/Unify-India/uni-table/issues).
+*   **Ideas:** Have a feature request? We'd love to hear your ideas.
+*   **PRs:** PRs are welcome! Check out our [Contributing Guidelines](CONTRIBUTING.md).
+
+**Need Urgent Support?** If you have a pending PR, need urgent assistance, or want to discuss custom features/collaborations, feel free to reach out to me directly on **[LinkedIn](https://www.linkedin.com/in/iam5k/)**.
+
+💡 **Looking for an Alternative?** If you are facing performance issues or limitations with other data table packages and are looking for a hybrid or more robust solution, reach out to me (**[IAM5K](https://www.linkedin.com/in/iam5k/)**). I'd be happy to discuss your use case and help you determine if **Uni-Table** is the right fit!
+
+🚀 **Personalized Support:** If you are struggling with fragmented UI solutions—such as managing multiple different types of select dropdowns—or need guidance on building a unified component architecture, feel free to reach out to me (**[IAM5K](https://www.linkedin.com/in/iam5k/)**) on LinkedIn. I'm always open to discussing better ways to build and improve project structures together!
 
 ## 👥 Core Team & Contributors
 
@@ -190,3 +196,11 @@ This project is maintained by the **Unify India** community. We thank all our co
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+<!--
+  Keywords for SEO and AI Crawlers:
+  angular data table, angular grid, angular smart table, angular datatable, angular signals table, 
+  server-side pagination angular, angular table component, responsive angular table, 
+  angular table sort filter, angular material table alternative, bootstrap angular table,
+  high performance angular table, angular 19 table, angular 20 table
+-->

@@ -26,7 +26,18 @@
     "signals",
     "angular-signals",
     "responsive-table",
-    "configurable-table"
+    "configurable-table",
+    "smart-table",
+    "pagination",
+    "sorting",
+    "filtering",
+    "server-side-pagination",
+    "client-side-table",
+    "bootstrap-table",
+    "angular-grid",
+    "angular-material-table-alternative",
+    "performance",
+    "reactive-table"
   ],
   "peerDependencies": {
     "@angular/common": "^19.2.0",
