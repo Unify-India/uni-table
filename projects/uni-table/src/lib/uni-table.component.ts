@@ -1,7 +1,12 @@
-import { Component, Input, OnInit, Output, EventEmitter, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, ViewChild, signal, computed, WritableSignal, effect, SimpleChanges, OnChanges, ContentChildren, QueryList, AfterContentInit, TemplateRef, ContentChild, HostListener } from '@angular/core';
+import { 
+  Component, OnInit, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, 
+  signal, computed, effect, TemplateRef, HostListener, 
+  input, output, viewChild, contentChild, contentChildren, linkedSignal,
+  AfterContentInit
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UniTableConfig, UniDataConfig, UniTableState, UniColumn, SortState } from './uni-table.interface';
+import { UniTableConfig, UniDataConfig, UniTableState, UniColumn } from './uni-table.interface';
 import { UniLabelComponent } from './components/uni-label.component';
 import { UniTemplateDirective } from './components/uni-template.directive';
 import { UniSearchComponent } from './components/uni-search.component';
@@ -10,29 +15,74 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'uni-table',
   standalone: true,
-  imports: [CommonModule, FormsModule, UniTemplateDirective, UniLabelComponent, UniSearchComponent],
+  imports: [CommonModule, FormsModule, UniLabelComponent, UniSearchComponent],
   templateUrl: './uni-table.component.html',
   styleUrl: './uni-table.component.scss'
 })
-export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, AfterViewInit, OnDestroy {
-  @Input() config: UniTableConfig = {};
-  @Input() dataConfig: UniDataConfig = { columns: [], data: [] };
-  @Input() externalState: any = null;
-  @Output() stateChange = new EventEmitter<UniTableState>();
-  @Output() stateRestored = new EventEmitter<any>();
+export class UniTableComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
+  // Signal Inputs
+  config = input<UniTableConfig>({});
+  dataConfig = input<UniDataConfig>({ columns: [], data: [] });
+  externalState = input<any>(null);
 
-  @ViewChild('tableContainer') tableContainer!: ElementRef;
-  @ViewChild('dataTable') dataTable!: ElementRef;
-  @ViewChild('colVisWrapper') colVisWrapper?: ElementRef;
-  @ViewChild('contextMenuWrapper') contextMenuWrapper?: ElementRef;
-  @ContentChildren(UniTemplateDirective) templates!: QueryList<UniTemplateDirective>;
-  @ContentChild(UniSearchComponent) manualSearchComponent?: UniSearchComponent;
+  // Signal Outputs
+  stateChange = output<UniTableState>();
+  stateRestored = output<any>();
+
+  // Signal Queries
+  tableContainer = viewChild<ElementRef>('tableContainer');
+  dataTable = viewChild<ElementRef>('dataTable');
+  colVisWrapper = viewChild<ElementRef>('colVisWrapper');
+  contextMenuWrapper = viewChild<ElementRef>('contextMenuWrapper');
+  templates = contentChildren(UniTemplateDirective);
+  manualSearchComponent = contentChild(UniSearchComponent);
   
-  private templateMap = new Map<string, TemplateRef<any>>();
-  private manualSearchSubscription?: Subscription;
+  private templateMap = computed(() => {
+    const map = new Map<string, TemplateRef<any>>();
+    this.templates().forEach(item => {
+      map.set(item.name(), item.template);
+    });
+    return map;
+  });
 
-  protected configS = signal<UniTableConfig>({});
-  protected dataConfigS = signal<UniDataConfig>({ columns: [], data: [] });
+  private manualSearchSubscription?: any;
+
+  // Derived Configuration Signal
+  protected configS = computed(() => {
+    const cfg = this.config();
+    const resolvedConfig: UniTableConfig = {
+      paging: true,
+      searching: true,
+      colVis: true,
+      pageLength: 10,
+      overflow: 'visible',
+      serverSide: false,
+      manualSearch: false,
+      showContextMenu: false,
+      autoSaveState: true,
+      showSaveControls: false,
+      pageLengthOptions: [5, 10, 25, 50, 100],
+      pagingControls: {
+        firstLast: false,
+        prevNext: true,
+        type: 'icons',
+        firstText: 'First',
+        lastText: 'Last',
+        prevText: 'Previous',
+        nextText: 'Next',
+        ...cfg.pagingControls
+      },
+      ...cfg
+    };
+
+    if (cfg.responsive === true && !cfg.overflow) {
+      resolvedConfig.overflow = 'responsive';
+    }
+
+    return resolvedConfig;
+  });
+
+  protected dataConfigS = linkedSignal(() => this.dataConfig());
 
   public effectivePageLengthOptions = computed(() => {
     return this.configS().pageLengthOptions || [5, 10, 25, 50, 100];
@@ -40,11 +90,24 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   public searchTerm = signal('');
   currentPage = signal(1);
-  pageSize = signal(10);
-  sortColumn = signal<string | null>(null);
-  sortDirection = signal<'asc' | 'desc'>('asc');
+  
+  pageSize = linkedSignal(() => this.configS().pageLength ?? 10);
+  sortColumn = linkedSignal<string | null>(() => this.configS().defaultSort?.column ?? null);
+  sortDirection = linkedSignal<'asc' | 'desc'>(() => this.configS().defaultSort?.direction ?? 'asc');
 
-  hiddenColumns = signal<Set<string>>(new Set());
+  hiddenColumns = linkedSignal<UniDataConfig, Set<string>>({
+    source: this.dataConfig,
+    computation: (data: UniDataConfig) => {
+      const initialHidden = new Set<string>();
+      data.columns.forEach((col: UniColumn) => {
+        if (col.visible === false) {
+          initialHidden.add(col.key);
+        }
+      });
+      return initialHidden;
+    }
+  });
+
   responsiveHiddenColumns = signal<Set<string>>(new Set());
   expandedRows = signal<Set<number>>(new Set());
   showColVisMenu = signal(false);
@@ -54,10 +117,10 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (this.showColVisMenu() && !this.colVisWrapper?.nativeElement.contains(event.target)) {
+    if (this.showColVisMenu() && !this.colVisWrapper()?.nativeElement.contains(event.target)) {
       this.showColVisMenu.set(false);
     }
-    if (this.menuOpen() && !this.contextMenuWrapper?.nativeElement.contains(event.target)) {
+    if (this.menuOpen() && !this.contextMenuWrapper()?.nativeElement.contains(event.target)) {
       this.menuOpen.set(false);
     }
   }
@@ -141,7 +204,7 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
         sortDirection: this.sortDirection(),
         currentPage: this.currentPage(),
         hiddenColumns: Array.from(this.hiddenColumns()),
-        externalFilters: this.externalState
+        externalFilters: this.externalState()
       };
 
       if (cfg.serverSide) {
@@ -165,39 +228,11 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
   }
 
   ngOnInit(): void {
-    // Initial setup of non-config-dependent signals is handled here.
-    // The main configS signal is set in ngOnChanges, which runs before ngOnInit.
-    
-    // Set initial hidden columns based on dataConfig
-    const initialHidden = new Set<string>();
-    this.dataConfig.columns.forEach(col => {
-      if (col.visible === false) {
-        initialHidden.add(col.key);
-      }
-    });
-    this.hiddenColumns.set(initialHidden);
-
-    // Now that configS is resolved, apply its values to other signals,
-    // respecting that localStorage might have already set them.
     const cfg = this.configS();
-    
-    // Check if pageSize is still at its initial default before overriding with config
-    if (this.pageSize() === 10 && cfg.pageLength) {
-      this.pageSize.set(cfg.pageLength);
-    }
-
-    // Check if sortColumn is still at its initial default before overriding with config
-    if (this.sortColumn() === null && cfg.defaultSort) {
-      this.sortColumn.set(cfg.defaultSort.column);
-      this.sortDirection.set(cfg.defaultSort.direction);
-    }
-    
-    // Restore state from localStorage, which will override any defaults set above.
     if (cfg.storageKey) {
       const saved = localStorage.getItem(cfg.storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
-        
         this.searchTerm.set(parsed.searchTerm ?? '');
         this.pageSize.set(parsed.pageSize ?? cfg.pageLength ?? 10);
         this.currentPage.set(parsed.currentPage ?? 1);
@@ -206,86 +241,53 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
         if (parsed.hiddenCols) {
           this.hiddenColumns.set(new Set(parsed.hiddenCols));
         }
-
         if (parsed.externalFilters) {
           this.stateRestored.emit(parsed.externalFilters);
         }
       }
     }
   }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['config']) {
-      const resolvedConfig: UniTableConfig = {
-        paging: true,
-        searching: true,
-        colVis: true,
-        pageLength: 10,
-        overflow: 'visible',
-        serverSide: false,
-        manualSearch: false,
-        showContextMenu: false,
-        autoSaveState: true,
-        showSaveControls: false,
-        pageLengthOptions: [5, 10, 25, 50, 100],
-        pagingControls: { // Add default paging controls
-          firstLast: false,
-          prevNext: true,
-          type: 'icons',
-          firstText: 'First',
-          lastText: 'Last',
-          prevText: 'Previous',
-          nextText: 'Next',
-          ...this.config.pagingControls // Merge user-provided paging controls
-        },
-        ...this.config
-      };
-
-      if (this.config.responsive === true && !this.config.overflow) {
-        resolvedConfig.overflow = 'responsive';
-      }
-
-      this.configS.set(resolvedConfig);
-    }
-    if (changes['dataConfig']) {
-      this.dataConfigS.set(this.dataConfig);
-    }
-  }
   
   ngAfterContentInit(): void {
-    this.templates.forEach(item => {
-      this.templateMap.set(item.name, item.template);
+    effect(() => {
+      const comp = this.manualSearchComponent();
+      if (this.manualSearchSubscription) {
+        this.manualSearchSubscription.unsubscribe();
+      }
+      if (comp) {
+        this.manualSearchSubscription = comp.searchTermChange.subscribe(term => {
+          this.onSearch(term);
+        });
+      }
     });
-
-    if (this.manualSearchComponent) {
-      this.manualSearchSubscription = this.manualSearchComponent.searchTermChange.subscribe(term => {
-        this.onSearch(term);
-      }) as Subscription;
-    }
   }
 
   ngAfterViewInit() {
-    if (this.configS().overflow === 'responsive') {
-      this.setupResizeObserver();
-    }
+    effect(() => {
+      if (this.configS().overflow === 'responsive') {
+        this.setupResizeObserver();
+      } else {
+        this.resizeObserver?.disconnect();
+      }
+    });
   }
 
   ngOnDestroy() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
+    this.resizeObserver?.disconnect();
+    if (this.manualSearchSubscription) {
+      this.manualSearchSubscription.unsubscribe();
     }
-    this.manualSearchSubscription?.unsubscribe();
   }
 
   getColumnTemplate(col: UniColumn): TemplateRef<any> | null {
     if (col.templateId) {
-      return this.templateMap.get(col.templateId) || null;
+      return this.templateMap().get(col.templateId) || null;
     }
     return col.cellTemplate || null;
   }
 
   getTemplate(name: string): TemplateRef<any> | null {
-    return this.templateMap.get(name) || null;
+    return this.templateMap().get(name) || null;
   }
   
   setupResizeObserver() {
@@ -293,27 +295,31 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
     this.resizeObserver = new ResizeObserver(() => {
       window.requestAnimationFrame(() => this.calculateResponsiveColumns());
     });
-    if (this.tableContainer) {
-      this.resizeObserver.observe(this.tableContainer.nativeElement);
+    const container = this.tableContainer();
+    if (container) {
+      this.resizeObserver.observe(container.nativeElement);
     }
   }
 
   calculateResponsiveColumns() {
-    if (this.configS().overflow !== 'responsive' || !this.tableContainer || !this.dataTable) return;
+    const container = this.tableContainer();
+    const table = this.dataTable();
+    if (this.configS().overflow !== 'responsive' || !container || !table) return;
     
-    const containerWidth = this.tableContainer.nativeElement.clientWidth;
+    const containerWidth = container.nativeElement.clientWidth;
     const visibleCols = this.dataConfigS().columns.filter(c => !this.hiddenColumns().has(c.key));
     const sortedCols = [...visibleCols].sort((a, b) => (a.priority || 0) - (b.priority || 0));
 
-    if (this.dataTable.nativeElement.offsetWidth > containerWidth) {
+    if (table.nativeElement.offsetWidth > containerWidth) {
       for (const col of sortedCols) {
         if (!this.responsiveHiddenColumns().has(col.key)) {
           this.responsiveHiddenColumns.update(s => {
-            s.add(col.key);
-            return new Set(s);
+            const next = new Set(s);
+            next.add(col.key);
+            return next;
           });
           this.cdr.detectChanges();
-          if (this.dataTable.nativeElement.offsetWidth <= containerWidth) break;
+          if (table.nativeElement.offsetWidth <= containerWidth) break;
         }
       }
     } else {
@@ -324,14 +330,16 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
       if (hiddenCols.length > 0) {
         const colToRestore = hiddenCols[0];
         this.responsiveHiddenColumns.update(s => {
-          s.delete(colToRestore.key);
-          return new Set(s);
+          const next = new Set(s);
+          next.delete(colToRestore.key);
+          return next;
         });
         this.cdr.detectChanges();
-        if (this.dataTable.nativeElement.offsetWidth > containerWidth) {
+        if (table.nativeElement.offsetWidth > containerWidth) {
           this.responsiveHiddenColumns.update(s => {
-            s.add(colToRestore.key);
-            return new Set(s);
+            const next = new Set(s);
+            next.add(colToRestore.key);
+            return next;
           });
           this.cdr.detectChanges();
         }
@@ -366,8 +374,9 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   toggleColumnVisibility(columnKey: string) {
     this.hiddenColumns.update(s => {
-      s.has(columnKey) ? s.delete(columnKey) : s.add(columnKey);
-      return new Set(s);
+      const next = new Set(s);
+      next.has(columnKey) ? next.delete(columnKey) : next.add(columnKey);
+      return next;
     });
   }
 
@@ -383,8 +392,9 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
 
   toggleRowExpansion(index: number) {
     this.expandedRows.update(s => {
-      s.has(index) ? s.delete(index) : s.add(index);
-      return new Set(s);
+      const next = new Set(s);
+      next.has(index) ? next.delete(index) : next.add(index);
+      return next;
     });
   }
   
@@ -406,7 +416,7 @@ export class UniTableComponent implements OnInit, OnChanges, AfterContentInit, A
       sort: { column: this.sortColumn(), direction: this.sortDirection() },
       currentPage: this.currentPage(),
       hiddenCols: Array.from(this.hiddenColumns()),
-      externalFilters: this.externalState
+      externalFilters: this.externalState()
     };
 
     localStorage.setItem(cfg.storageKey, JSON.stringify(fullSnapshot));
