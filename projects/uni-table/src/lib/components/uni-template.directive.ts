@@ -1,11 +1,11 @@
-import { Directive, Input, TemplateRef } from '@angular/core';
+import { Directive, input, TemplateRef } from '@angular/core';
 
 @Directive({
   selector: '[uniTemplate]',
   standalone: true,
 })
 export class UniTemplateDirective {
-  @Input('uniTemplate') name!: string;
+  name = input.required<string>({ alias: 'uniTemplate' });
 
   constructor(public template: TemplateRef<any>) {}
 }
