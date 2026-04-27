@@ -225,6 +225,26 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
         localStorage.setItem(cfg.storageKey, JSON.stringify(savedState));
       }
     });
+
+    effect(() => {
+      const comp = this.manualSearchComponent();
+      if (this.manualSearchSubscription) {
+        this.manualSearchSubscription.unsubscribe();
+      }
+      if (comp) {
+        this.manualSearchSubscription = comp.searchTermChange.subscribe(term => {
+          this.onSearch(term);
+        });
+      }
+    });
+
+    effect(() => {
+      if (this.configS().overflow === 'responsive') {
+        this.setupResizeObserver();
+      } else {
+        this.resizeObserver?.disconnect();
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -248,29 +268,9 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
     }
   }
   
-  ngAfterContentInit(): void {
-    effect(() => {
-      const comp = this.manualSearchComponent();
-      if (this.manualSearchSubscription) {
-        this.manualSearchSubscription.unsubscribe();
-      }
-      if (comp) {
-        this.manualSearchSubscription = comp.searchTermChange.subscribe(term => {
-          this.onSearch(term);
-        });
-      }
-    });
-  }
+  ngAfterContentInit(): void {}
 
-  ngAfterViewInit() {
-    effect(() => {
-      if (this.configS().overflow === 'responsive') {
-        this.setupResizeObserver();
-      } else {
-        this.resizeObserver?.disconnect();
-      }
-    });
-  }
+  ngAfterViewInit() {}
 
   ngOnDestroy() {
     this.resizeObserver?.disconnect();

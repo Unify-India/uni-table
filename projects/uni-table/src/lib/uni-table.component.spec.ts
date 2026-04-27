@@ -43,23 +43,9 @@ describe('UniTableComponent', () => {
     fixture = TestBed.createComponent(UniTableComponent);
     component = fixture.componentInstance;
     
-    // Set inputs and trigger ngOnChanges manually
-    component.dataConfig = mockDataConfig;
-    component.config = { paging: true, searching: true };
-    component.ngOnChanges({
-      dataConfig: {
-        currentValue: mockDataConfig,
-        previousValue: undefined,
-        firstChange: true,
-        isFirstChange: () => true
-      },
-      config: {
-        currentValue: component.config,
-        previousValue: undefined,
-        firstChange: true,
-        isFirstChange: () => true
-      }
-    } as any);
+    // Set inputs using signal-compatible way
+    fixture.componentRef.setInput('dataConfig', mockDataConfig);
+    fixture.componentRef.setInput('config', { paging: true, searching: true });
 
     fixture.detectChanges();
   });
@@ -143,15 +129,8 @@ describe('UniTableComponent', () => {
 
   it('should save and restore state from localStorage', () => {
     const storageKey = 'test-table-state';
-    component.config = { storageKey: storageKey };
-    component.ngOnChanges({
-        config: {
-            currentValue: { storageKey: storageKey },
-            previousValue: undefined,
-            firstChange: true,
-            isFirstChange: () => true
-        }
-    } as any);
+    fixture.componentRef.setInput('config', { storageKey: storageKey });
+    fixture.detectChanges();
     
     component.onSearch('Alice');
     component.manualSave();
@@ -170,23 +149,14 @@ describe('UniTableComponent', () => {
 
   it('should emit stateChange in server-side mode', () => {
     spyOn(component.stateChange, 'emit');
-    component.config = { serverSide: true };
-    component.ngOnChanges({
-        config: {
-            currentValue: { serverSide: true },
-            previousValue: undefined,
-            firstChange: true,
-            isFirstChange: () => true
-        }
-    } as any);
-
+    fixture.componentRef.setInput('config', { serverSide: true });
     fixture.detectChanges();
     
     component.onSearch('test');
     fixture.detectChanges();
 
     expect(component.stateChange.emit).toHaveBeenCalled();
-    const emittedState = (component.stateChange.emit as jasmine.Spy).calls.mostRecent().args[0];
+    const emittedState = (component.stateChange.emit as any).calls.mostRecent().args[0];
     expect(emittedState.searchTerm).toBe('test');
   });
 

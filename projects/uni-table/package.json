@@ -1,6 +1,6 @@
 {
   "name": "@unify-india/uni-table",
-  "version": "0.1.1",
+  "version": "20.0.0",
   "description": "A powerful, modern, and highly configurable data table for Angular, built from the ground up with Signals for peak performance and reactivity.",
   "author": {
     "name": "Unify India | IAM5K",
@@ -43,10 +43,10 @@
     "reactive-table"
   ],
   "peerDependencies": {
-    "@angular/common": "^17.3.0 || ^18.0.0 || ^19.0.0",
-    "@angular/core": "^17.3.0 || ^18.0.0 || ^19.0.0",
-    "@angular/cdk": "^17.3.0 || ^18.0.0 || ^19.0.0",
-    "@ngx-translate/core": "^15.0.0 || ^16.0.0 || ^17.0.0"
+    "@angular/common": "^17.3.0 || ^18.0.0 || ^19.0.0 || ^20.0.0",
+    "@angular/core": "^17.3.0 || ^18.0.0 || ^19.0.0 || ^20.0.0",
+    "@angular/cdk": "^17.3.0 || ^18.0.0 || ^19.0.0 || ^20.0.0",
+    "@ngx-translate/core": "^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

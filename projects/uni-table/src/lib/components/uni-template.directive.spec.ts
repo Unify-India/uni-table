@@ -42,7 +42,7 @@ describe('UniTemplateDirective', () => {
   it('should collect templates from content', () => {
     const templates = component.wrapper.templates.toArray();
     expect(templates.length).toBe(2);
-    expect(templates[0].name).toBe('testHeader');
-    expect(templates[1].name).toBe('testCell');
+    expect(templates[0].name()).toBe('testHeader');
+    expect(templates[1].name()).toBe('testCell');
   });
 });
