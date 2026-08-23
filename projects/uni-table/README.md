@@ -49,6 +49,7 @@ Uni-Table versioning now aligns with Angular's major versions to ensure seamless
 
 | Angular Version | Uni-Table Version |
 | :--- | :--- |
+| **Angular 21** | `21.x.x` |
 | **Angular 20** | `20.x.x` |
 | **Angular 19** | `20.x.x` |
 | **Angular 18** | `20.x.x` |

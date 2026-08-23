@@ -1,12 +1,12 @@
 import { Component, input, inject, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Added CommonModule import
+ // Added CommonModule import
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'uni-label',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   // The template is just the text. No wrappers needed.
   template: `{{ displayText() }}` 
 })

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ClientSideTableComponent } from './components/client-side-table/client-side-table.component';
 import { ServerSideTableComponent } from './components/server-side-table/server-side-table.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ClientSideTableComponent, ServerSideTableComponent],
+  imports: [ClientSideTableComponent, ServerSideTableComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
