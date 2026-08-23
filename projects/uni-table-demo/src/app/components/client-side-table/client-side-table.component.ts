@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UniTableConfig, UniDataConfig, UniColumn, UniTableComponent, UniTemplateDirective } from 'uni-table';
@@ -8,6 +8,7 @@ import { UniTableConfig, UniDataConfig, UniColumn, UniTableComponent, UniTemplat
   standalone: true,
   imports: [CommonModule, FormsModule, UniTableComponent, UniTemplateDirective],
   templateUrl: './client-side-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './client-side-table.component.scss'
 })
 export class ClientSideTableComponent {

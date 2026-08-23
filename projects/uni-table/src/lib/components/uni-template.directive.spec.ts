@@ -1,10 +1,11 @@
-import { Component, ContentChildren, QueryList, ViewChild } from '@angular/core';
+import { Component, ContentChildren, QueryList, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UniTemplateDirective } from './uni-template.directive';
 
 @Component({
   selector: 'test-wrapper',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<ng-content></ng-content>`
 })
 class TestWrapperComponent {
@@ -14,6 +15,7 @@ class TestWrapperComponent {
 @Component({
   standalone: true,
   imports: [TestWrapperComponent, UniTemplateDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <test-wrapper #wrapper>
       <ng-template uniTemplate="testHeader">Header</ng-template>

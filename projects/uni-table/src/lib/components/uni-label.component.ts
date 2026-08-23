@@ -1,4 +1,4 @@
-import { Component, input, inject, computed, signal } from '@angular/core';
+import { Component, input, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
  // Added CommonModule import
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [],
   // The template is just the text. No wrappers needed.
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `{{ displayText() }}` 
 })
 export class UniLabelComponent {

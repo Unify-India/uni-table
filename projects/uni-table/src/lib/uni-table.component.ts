@@ -1,8 +1,9 @@
-import { 
-  Component, OnInit, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, 
-  signal, computed, effect, TemplateRef, HostListener, 
+import {
+  Component, OnInit, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy,
+  signal, computed, effect, TemplateRef, HostListener,
   input, output, viewChild, contentChild, contentChildren, linkedSignal,
-  AfterContentInit
+  AfterContentInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +18,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, UniLabelComponent, UniSearchComponent],
   templateUrl: './uni-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './uni-table.component.scss'
 })
 export class UniTableComponent<T extends object = Record<string, unknown>> implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {

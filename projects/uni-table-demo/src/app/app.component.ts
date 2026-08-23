@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { ClientSideTableComponent } from './components/client-side-table/client-side-table.component';
 import { ServerSideTableComponent } from './components/server-side-table/server-side-table.component';
@@ -8,6 +8,7 @@ import { ServerSideTableComponent } from './components/server-side-table/server-
   standalone: true,
   imports: [ClientSideTableComponent, ServerSideTableComponent],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.scss'
 })
 export class AppComponent {

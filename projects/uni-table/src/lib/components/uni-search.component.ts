@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms'; 
 
 @Component({
@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
       />
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './uni-search.component.scss' // Moved styles to a file
 })
 export class UniSearchComponent {

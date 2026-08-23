@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UniTableComponent, UniTableConfig, UniDataConfig, UniColumn, UniTemplateDirective, UniTableState } from 'uni-table';
@@ -9,6 +9,7 @@ import { TableService } from '../../table.service';
   standalone: true,
   imports: [CommonModule, FormsModule, UniTableComponent, UniTemplateDirective],
   templateUrl: './server-side-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './server-side-table.component.scss'
 })
 export class ServerSideTableComponent implements OnInit {
