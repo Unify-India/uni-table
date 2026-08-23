@@ -23,10 +23,12 @@
 
       <!-- Default Search -->
       @if (!configS().manualSearch) {
-        <uni-search
-          (searchTermChange)="onSearch($event)"
-          [placeholder]="'Search...'"><!-- TODO: from config -->
-        </uni-search>
+        @defer (on immediate) {
+          <uni-search
+            (searchTermChange)="onSearch($event)"
+            [placeholder]="'Search...'"><!-- TODO: from config -->
+          </uni-search>
+        }
       }
 
       <!-- User Actions Template -->
@@ -126,7 +128,11 @@
                     [ngStyle]="getCombinedStyle(col.headerStyle, null, col)">
                     <div class="uni-table__th-content">
                       <span class="uni-header__label" [class.uni-header__label--wrap]="col.headerWrap">
-                        <uni-label [key]="col.headerLabel || col.title"></uni-label>
+                        @defer (on immediate) {
+                          <uni-label [key]="col.headerLabel || col.title"></uni-label>
+                        } @placeholder {
+                          <span>{{ col.title }}</span>
+                        }
                       </span>
                       @if (col.orderable !== false) {
                         <span class="uni-table__sort-icons">
