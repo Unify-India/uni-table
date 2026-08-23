@@ -1,6 +1,6 @@
 {
   "name": "@unify-india/uni-table",
-  "version": "21.0.0",
+  "version": "22.0.0",
   "description": "A powerful, modern, and highly configurable data table for Angular, built from the ground up with Signals for peak performance and reactivity.",
   "author": {
     "name": "Unify India | IAM5K",
