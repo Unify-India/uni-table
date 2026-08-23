@@ -49,6 +49,7 @@ Uni-Table versioning now aligns with Angular's major versions to ensure seamless
 
 | Angular Version | Uni-Table Version |
 | :--- | :--- |
+| **Angular 22** | `22.x.x` |
 | **Angular 21** | `21.x.x` |
 | **Angular 20** | `20.x.x` |
 | **Angular 19** | `20.x.x` |
@@ -149,10 +150,10 @@ export class AppComponent {
 
 ## 🤝 Contributing & Feedback
 
-We want to make this the best data table for Angular!
+We are open to contributions! We want to make this the best data table for Angular, and your input is vital. Whether you have suggestions, new feature ideas, or bug fixes, feel free to open a Pull Request or create an Issue.
 
-*   **Issues:** Found a bug? [Open an Issue](https://github.com/Unify-India/uni-table/issues).
-*   **PRs:** Check out our [Contributing Guidelines](../../CONTRIBUTING.md).
+*   **Issues:** Found a bug or have a suggestion? [Open an Issue](https://github.com/Unify-India/uni-table/issues).
+*   **PRs:** Pull Requests are welcome for bug fixes, new features, and suggestions! Check out our [Contributing Guidelines](../../CONTRIBUTING.md).
 
 **Need Urgent Support?** Reach out to me directly on **[LinkedIn](https://www.linkedin.com/in/iam5k/)**.
 

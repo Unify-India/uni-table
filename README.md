@@ -59,13 +59,16 @@ export class YourComponent {}
 
 ## 📊 Version Compatibility
 
-> **Note:** The current version (`0.1.1`) is considered a **beta release**. Once we receive sufficient feedback and confirmation from our users, we will transition to a versioning scheme that aligns directly with Angular's major and minor versions (e.g., `@unify-india/uni-table` version `19.2.x` will target Angular `19.2.x`).
+Uni-Table versioning aligns with Angular's major versions to ensure seamless integration and long-term support.
 
 | Angular Version | Uni-Table Version |
 | :--- | :--- |
-| **Angular 19+** | `0.1.1` (Beta) |
-| **Angular 20** | *Coming Soon* |
-| **Angular 21** | *Coming Soon* |
+| **Angular 22** | `22.x.x` |
+| **Angular 21** | `21.x.x` |
+| **Angular 20** | `20.x.x` |
+| **Angular 19** | `20.x.x` |
+| **Angular 18** | `20.x.x` |
+| **Angular 17.3+** | `20.x.x` |
 
 ## ✨ Key Features
 
@@ -171,12 +174,11 @@ This README provides a high-level overview. For a comprehensive guide on impleme
 
 ## 🤝 Contributing & Feedback
 
-We want to make this the best data table for Angular, and your input is vital! Whether you've found a bug, have a feature idea, or want to contribute code, we're all ears.
+We are open to contributions! We want to make this the best data table for Angular, and your input is vital. Whether you have suggestions, new feature ideas, or bug fixes, feel free to open a Pull Request or create an Issue.
 
 *   **Try it out:** Install it in your project and let us know what you think.
-*   **Issues:** Found a bug? Please [Open an Issue](https://github.com/Unify-India/uni-table/issues).
-*   **Ideas:** Have a feature request? We'd love to hear your ideas.
-*   **PRs:** PRs are welcome! Check out our [Contributing Guidelines](CONTRIBUTING.md).
+*   **Issues:** Found a bug or have a suggestion? Please [Open an Issue](https://github.com/Unify-India/uni-table/issues).
+*   **PRs:** Pull Requests are welcome for bug fixes, new features, and suggestions! Check out our [Contributing Guidelines](CONTRIBUTING.md).
 
 **Need Urgent Support?** If you have a pending PR, need urgent assistance, or want to discuss custom features/collaborations, feel free to reach out to me directly on **[LinkedIn](https://www.linkedin.com/in/iam5k/)**.
 

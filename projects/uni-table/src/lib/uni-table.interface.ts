@@ -41,14 +41,14 @@ export interface UniTableConfig {
 export interface UniTableState {
   searchTerm: string;
   pageSize: number;
-  sortColumn: string | null; // Changed to match SortState
-  sortDirection: 'asc' | 'desc'; // Changed to match SortState
+  sortColumn: string | null;
+  sortDirection: 'asc' | 'desc';
   currentPage: number;
   hiddenColumns: string[];
-  externalFilters?: any; // New
+  externalFilters?: unknown;
 }
 
-export interface UniColumn {
+export interface UniColumn<T extends object = Record<string, unknown>> {
   key: string;            // Data property key or unique ID
   title: string;          // Header display text
   headerLabel?: string;   // Optional translation key for header, falls back to title
@@ -60,9 +60,9 @@ export interface UniColumn {
   priority?: number;      // Higher number = Higher Priority (Stays visible longer). Default 0.
   headerClass?: string;
   cellClass?: string;
-  headerStyle?: { [key: string]: string } | ((column: UniColumn) => { [key: string]: string });
-  cellStyle?: { [key: string]: string } | ((row: any, column: UniColumn) => { [key: string]: string });
-  cellTemplate?: TemplateRef<any>; // For direct template reference
+  headerStyle?: { [key: string]: string } | ((column: UniColumn<T>) => { [key: string]: string });
+  cellStyle?: { [key: string]: string } | ((row: T, column: UniColumn<T>) => { [key: string]: string });
+  cellTemplate?: TemplateRef<unknown>; // For direct template reference
   templateId?: string; // For template reference by string ID
   headerWrap?: boolean; // Optional: If true, header text will wrap. Defaults to false (ellipsis).
 }
@@ -74,9 +74,9 @@ export interface UniAction {
   onClick: () => void;
 }
 
-export interface UniDataConfig {
-  columns: UniColumn[];
-  data: any[];
+export interface UniDataConfig<T extends object = Record<string, unknown>> {
+  columns: UniColumn<T>[];
+  data: T[];
   totalRecords?: number;
   actions?: UniAction[]; // Toolbar actions like Export
 }

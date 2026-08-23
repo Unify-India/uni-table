@@ -19,15 +19,15 @@ import { Subscription } from 'rxjs';
   templateUrl: './uni-table.component.html',
   styleUrl: './uni-table.component.scss'
 })
-export class UniTableComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
+export class UniTableComponent<T extends object = Record<string, unknown>> implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
   // Signal Inputs
   config = input<UniTableConfig>({});
-  dataConfig = input<UniDataConfig>({ columns: [], data: [] });
-  externalState = input<any>(null);
+  dataConfig = input<UniDataConfig<T>>({ columns: [], data: [] });
+  externalState = input<unknown>(null);
 
   // Signal Outputs
   stateChange = output<UniTableState>();
-  stateRestored = output<any>();
+  stateRestored = output<unknown>();
 
   // Signal Queries
   tableContainer = viewChild<ElementRef>('tableContainer');
@@ -38,14 +38,14 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
   manualSearchComponent = contentChild(UniSearchComponent);
   
   private templateMap = computed(() => {
-    const map = new Map<string, TemplateRef<any>>();
+    const map = new Map<string, TemplateRef<unknown>>();
     this.templates().forEach(item => {
       map.set(item.name(), item.template);
     });
     return map;
   });
 
-  private manualSearchSubscription?: any;
+  private manualSearchSubscription?: { unsubscribe(): void };
 
   // Derived Configuration Signal
   protected configS = computed(() => {
@@ -95,11 +95,11 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
   sortColumn = linkedSignal<string | null>(() => this.configS().defaultSort?.column ?? null);
   sortDirection = linkedSignal<'asc' | 'desc'>(() => this.configS().defaultSort?.direction ?? 'asc');
 
-  hiddenColumns = linkedSignal<UniDataConfig, Set<string>>({
+  hiddenColumns = linkedSignal<UniDataConfig<T>, Set<string>>({
     source: this.dataConfig,
-    computation: (data: UniDataConfig) => {
+    computation: (data: UniDataConfig<T>) => {
       const initialHidden = new Set<string>();
-      data.columns.forEach((col: UniColumn) => {
+      data.columns.forEach((col: UniColumn<T>) => {
         if (col.visible === false) {
           initialHidden.add(col.key);
         }
@@ -140,7 +140,7 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
       const searchableCols = config.columns.filter(c => c.searchable !== false).map(c => c.key);
       data = data.filter(row =>
         searchableCols.some(colKey =>
-          String(row[colKey] || '').toLowerCase().includes(lowerTerm)
+          String((row as unknown as Record<string, unknown>)[colKey] || '').toLowerCase().includes(lowerTerm)
         )
       );
     }
@@ -149,11 +149,21 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
     if (sortCol) {
       const sortDir = this.sortDirection();
       data.sort((a, b) => {
-        const valA = a[sortCol];
-        const valB = b[sortCol];
-        if (valA < valB) return sortDir === 'asc' ? -1 : 1;
-        if (valA > valB) return sortDir === 'asc' ? 1 : -1;
-        return 0;
+        const valA = (a as unknown as Record<string, unknown>)[sortCol];
+        const valB = (b as unknown as Record<string, unknown>)[sortCol];
+        if (valA === valB) return 0;
+        if (valA == null) return sortDir === 'asc' ? 1 : -1;
+        if (valB == null) return sortDir === 'asc' ? -1 : 1;
+        
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          return sortDir === 'asc' ? valA - valB : valB - valA;
+        }
+        
+        const strA = String(valA).toLowerCase();
+        const strB = String(valB).toLowerCase();
+        return sortDir === 'asc' 
+          ? (strA < strB ? -1 : 1) 
+          : (strA > strB ? -1 : 1);
       });
     }
 
@@ -279,14 +289,14 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
     }
   }
 
-  getColumnTemplate(col: UniColumn): TemplateRef<any> | null {
+  getColumnTemplate(col: UniColumn<T>): TemplateRef<unknown> | null {
     if (col.templateId) {
       return this.templateMap().get(col.templateId) || null;
     }
     return col.cellTemplate || null;
   }
 
-  getTemplate(name: string): TemplateRef<any> | null {
+  getTemplate(name: string): TemplateRef<unknown> | null {
     return this.templateMap().get(name) || null;
   }
   
@@ -352,7 +362,7 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
     this.currentPage.set(1);
   }
 
-  onSort(column: UniColumn) {
+  onSort(column: UniColumn<T>) {
     if (column.orderable === false) return;
     if (this.sortColumn() === column.key) {
       this.sortDirection.update(dir => dir === 'asc' ? 'desc' : 'asc');
@@ -367,9 +377,12 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
     this.currentPage.set(page);
   }
   
-  onPageSizeChange(event: any) {
-    this.pageSize.set(+event.target.value);
-    this.currentPage.set(1);
+  onPageSizeChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    if (target) {
+      this.pageSize.set(+target.value);
+      this.currentPage.set(1);
+    }
   }
 
   toggleColumnVisibility(columnKey: string) {
@@ -402,7 +415,7 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
     return this.hiddenColumns().has(columnKey) || this.responsiveHiddenColumns().has(columnKey);
   }
 
-  getResponsiveHiddenColumns(): UniColumn[] {
+  getResponsiveHiddenColumns(): UniColumn<T>[] {
     return this.dataConfigS().columns.filter(col => this.responsiveHiddenColumns().has(col.key));
   }
   
@@ -471,9 +484,9 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
   }
 
   getCombinedStyle(
-    styleConfig: { [key: string]: string } | ((...args: any[]) => { [key: string]: string }) | undefined,
-    row: any | null,
-    col: UniColumn
+    styleConfig: { [key: string]: string } | ((column: UniColumn<T>) => { [key: string]: string }) | ((row: T, column: UniColumn<T>) => { [key: string]: string }) | undefined,
+    row: T | null,
+    col: UniColumn<T>
   ): { [key: string]: string } {
     let styles: { [key: string]: string } = {};
 
@@ -481,9 +494,15 @@ export class UniTableComponent implements OnInit, AfterContentInit, AfterViewIni
     if (col.minWidth) styles['minWidth'] = col.minWidth;
 
     if (styleConfig) {
-      const dynamicStyles = typeof styleConfig === 'function' ? (row ? styleConfig(row, col) : styleConfig(col)) : styleConfig;
+      const dynamicStyles = typeof styleConfig === 'function'
+        ? (row ? (styleConfig as (r: T, c: UniColumn<T>) => { [key: string]: string })(row, col) : (styleConfig as (c: UniColumn<T>) => { [key: string]: string })(col))
+        : styleConfig;
       styles = { ...styles, ...dynamicStyles };
     }
     return styles;
+  }
+
+  getCellValue(row: T, key: string): unknown {
+    return (row as unknown as Record<string, unknown>)[key];
   }
 }

@@ -1,20 +1,26 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { UniTableComponent } from './uni-table.component';
-import { UniDataConfig, UniTableConfig } from './uni-table.interface';
+import { UniDataConfig, UniTableConfig, UniColumn } from './uni-table.interface';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
-describe('UniTableComponent', () => {
-  let component: UniTableComponent;
-  let fixture: ComponentFixture<UniTableComponent>;
+interface TestRow {
+  id: number;
+  name: string;
+  age: number;
+}
 
-  const mockColumns = [
+describe('UniTableComponent', () => {
+  let component: UniTableComponent<TestRow>;
+  let fixture: ComponentFixture<UniTableComponent<TestRow>>;
+
+  const mockColumns: UniColumn<TestRow>[] = [
     { key: 'id', title: 'ID', priority: 10 },
     { key: 'name', title: 'Name', priority: 5 },
     { key: 'age', title: 'Age', priority: 1 }
   ];
 
-  const mockData = [
+  const mockData: TestRow[] = [
     { id: 1, name: 'John Doe', age: 30 },
     { id: 2, name: 'Jane Smith', age: 25 },
     { id: 3, name: 'Bob Johnson', age: 40 },
@@ -23,14 +29,14 @@ describe('UniTableComponent', () => {
     { id: 6, name: 'Eve Wilson', age: 45 }
   ];
 
-  const mockDataConfig: UniDataConfig = {
+  const mockDataConfig: UniDataConfig<TestRow> = {
     columns: mockColumns,
     data: mockData
   };
 
   beforeEach(async () => {
     // Mock ResizeObserver
-    (window as any).ResizeObserver = class ResizeObserver {
+    (window as unknown as { ResizeObserver: unknown }).ResizeObserver = class ResizeObserver {
       observe() {}
       unobserve() {}
       disconnect() {}
@@ -40,7 +46,7 @@ describe('UniTableComponent', () => {
       imports: [UniTableComponent, FormsModule]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(UniTableComponent);
+    fixture = TestBed.createComponent(UniTableComponent<TestRow>);
     component = fixture.componentInstance;
     
     // Set inputs using signal-compatible way
@@ -148,15 +154,15 @@ describe('UniTableComponent', () => {
   });
 
   it('should emit stateChange in server-side mode', () => {
-    spyOn(component.stateChange, 'emit');
+    const emitSpy = spyOn(component.stateChange, 'emit');
     fixture.componentRef.setInput('config', { serverSide: true });
     fixture.detectChanges();
     
     component.onSearch('test');
     fixture.detectChanges();
 
-    expect(component.stateChange.emit).toHaveBeenCalled();
-    const emittedState = (component.stateChange.emit as any).calls.mostRecent().args[0];
+    expect(emitSpy).toHaveBeenCalled();
+    const emittedState = emitSpy.calls.mostRecent().args[0];
     expect(emittedState.searchTerm).toBe('test');
   });
 

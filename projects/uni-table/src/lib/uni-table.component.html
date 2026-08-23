@@ -167,9 +167,9 @@
                       [ngStyle]="getCombinedStyle(col.cellStyle, row, col)">
                       @let template = getColumnTemplate(col);
                       @if (template) {
-                        <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: row[col.key] }"></ng-container>
+                        <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: getCellValue(row, col.key) }"></ng-container>
                       } @else {
-                        <span>{{ row[col.key] }}</span>
+                        <span>{{ getCellValue(row, col.key) }}</span>
                       }
                     </td>
                   }
@@ -188,9 +188,9 @@
                             <span class="uni-table__details-value" [ngStyle]="getCombinedStyle(col.cellStyle, row, col)">
                               @let template = getColumnTemplate(col);
                               @if (template) {
-                                <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: row[col.key] }"></ng-container>
+                                <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: getCellValue(row, col.key) }"></ng-container>
                               } @else {
-                                <span>{{ row[col.key] }}</span>
+                                <span>{{ getCellValue(row, col.key) }}</span>
                               }
                             </span>
                           </li>
