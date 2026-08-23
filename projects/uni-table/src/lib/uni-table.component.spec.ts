@@ -173,4 +173,80 @@ describe('UniTableComponent', () => {
     component.toggleRowExpansion(0);
     expect(component.expandedRows().has(0)).toBeFalse();
   });
+
+  describe('Detailed scenarios', () => {
+    it('should handle sorting with null, undefined, and mixed values safely', () => {
+      const dataWithNulls: TestRow[] = [
+        { id: 3, name: 'Charlie Davis', age: 30 },
+        { id: 1, name: 'Alice Brown', age: (null as unknown as number) },
+        { id: 2, name: 'Bob Johnson', age: 25 }
+      ];
+      fixture.componentRef.setInput('dataConfig', {
+        columns: mockColumns,
+        data: dataWithNulls
+      });
+      fixture.detectChanges();
+
+      // Sort by Age ascending
+      component.onSort(mockColumns[2]); // age
+      fixture.detectChanges();
+
+      const sortedData = component.processedData();
+      // Nulls should sort to the end of the ascending order
+      expect(sortedData[0].name).toBe('Bob Johnson'); // age 25
+      expect(sortedData[1].name).toBe('Charlie Davis'); // age 30
+      expect(sortedData[2].name).toBe('Alice Brown'); // age null
+    });
+
+    it('should recover gracefully if storageKey is set but localStorage contains invalid JSON', () => {
+      const storageKey = 'corrupt-table-state';
+      localStorage.setItem(storageKey, 'invalid-json-{');
+      
+      fixture.componentRef.setInput('config', { storageKey });
+      
+      // Should not throw an exception on init
+      expect(() => {
+        component.ngOnInit();
+        fixture.detectChanges();
+      }).not.toThrow();
+
+      localStorage.removeItem(storageKey);
+    });
+
+    it('should reject invalid page numbers on page change', () => {
+      component.pageSize.set(2);
+      fixture.detectChanges();
+      
+      // Initial page is 1
+      expect(component.currentPage()).toBe(1);
+
+      // Attempt to navigate to page 0 (invalid)
+      component.onPageChange(0);
+      expect(component.currentPage()).toBe(1);
+
+      // Attempt to navigate to page 10 (invalid, max page is 3)
+      component.onPageChange(10);
+      expect(component.currentPage()).toBe(1);
+
+      // Valid navigation
+      component.onPageChange(2);
+      expect(component.currentPage()).toBe(2);
+    });
+
+    it('should compute combined styles dynamically for headers and cells', () => {
+      const colWithStyles: UniColumn<TestRow> = {
+        key: 'name',
+        title: 'Name',
+        width: '200px',
+        cellStyle: (row, column) => ({ color: row.age > 30 ? 'red' : 'blue' })
+      };
+
+      const cellStyle = component.getCombinedStyle(colWithStyles.cellStyle, { id: 1, name: 'John', age: 40 }, colWithStyles);
+      expect(cellStyle['width']).toBe('200px');
+      expect(cellStyle['color']).toBe('red');
+
+      const cellStyleYoung = component.getCombinedStyle(colWithStyles.cellStyle, { id: 1, name: 'John', age: 20 }, colWithStyles);
+      expect(cellStyleYoung['color']).toBe('blue');
+    });
+  });
 });

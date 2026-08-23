@@ -262,17 +262,21 @@ export class UniTableComponent<T extends object = Record<string, unknown>> imple
     if (cfg.storageKey) {
       const saved = localStorage.getItem(cfg.storageKey);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        this.searchTerm.set(parsed.searchTerm ?? '');
-        this.pageSize.set(parsed.pageSize ?? cfg.pageLength ?? 10);
-        this.currentPage.set(parsed.currentPage ?? 1);
-        this.sortColumn.set(parsed.sort?.column ?? cfg.defaultSort?.column ?? null);
-        this.sortDirection.set(parsed.sort?.direction ?? cfg.defaultSort?.direction ?? 'asc');
-        if (parsed.hiddenCols) {
-          this.hiddenColumns.set(new Set(parsed.hiddenCols));
-        }
-        if (parsed.externalFilters) {
-          this.stateRestored.emit(parsed.externalFilters);
+        try {
+          const parsed = JSON.parse(saved);
+          this.searchTerm.set(parsed.searchTerm ?? '');
+          this.pageSize.set(parsed.pageSize ?? cfg.pageLength ?? 10);
+          this.currentPage.set(parsed.currentPage ?? 1);
+          this.sortColumn.set(parsed.sort?.column ?? cfg.defaultSort?.column ?? null);
+          this.sortDirection.set(parsed.sort?.direction ?? cfg.defaultSort?.direction ?? 'asc');
+          if (parsed.hiddenCols) {
+            this.hiddenColumns.set(new Set(parsed.hiddenCols));
+          }
+          if (parsed.externalFilters) {
+            this.stateRestored.emit(parsed.externalFilters);
+          }
+        } catch (e) {
+          console.warn('Failed to parse saved state from localStorage:', e);
         }
       }
     }
