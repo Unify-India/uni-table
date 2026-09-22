@@ -23,4 +23,15 @@ describe('UniLabelComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Test Label');
   });
+
+  it('should render empty string when key is empty string', () => {
+    fixture.componentRef.setInput('key', '');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('');
+  });
+
+  it('should handle missing key gracefully', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('');
+  });
 });

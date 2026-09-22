@@ -33,7 +33,7 @@ export class ClientSideTableComponent {
       { key: 'age', title: 'Age', width: '50px', priority: 2 },
       { key: 'startDate', title: 'Start Date', priority: 1 },
       { key: 'salary', title: 'Salary', templateId: 'salaryTpl', priority: 1, cellClass: 'text-end', cellStyle: this.salaryCellStyle },
-      { key: 'actions', title: 'Actions', templateId: 'actionTpl', orderable: false, searchable: false, priority: 1000, width: '100px', cellClass: 'text-center' }
+      { key: 'actions', title: '', templateId: 'actionTpl', orderable: false, searchable: false, priority: 1000, width: '100px', cellClass: 'text-center' }
     ],
     data: [
       { id: 1, name: 'Tiger Nixon', position: 'System Architect', office: 'Edinburgh', age: 61, startDate: '2011/04/25', salary: 320800 },

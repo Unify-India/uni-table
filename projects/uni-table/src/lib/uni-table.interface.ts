@@ -50,7 +50,7 @@ export interface UniTableState {
 
 export interface UniColumn<T extends object = Record<string, unknown>> {
   key: string;            // Data property key or unique ID
-  title: string;          // Header display text
+  title?: string;         // Header display text
   headerLabel?: string;   // Optional translation key for header, falls back to title
   width?: string;
   minWidth?: string;

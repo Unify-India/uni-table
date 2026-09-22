@@ -69,36 +69,40 @@
             <i class="bi bi-layout-three-columns"></i>
           </button>
           @if(showColVisMenu()) {
-            <ul class="uni-table__colvis-menu">
-              @for (col of dataConfigS().columns; track col.key; let i = $index) {
-                <li (click)="$event.stopPropagation()">
-                  <div class="uni-table__colvis-item">
-                    <input class="uni-table__colvis-checkbox" type="checkbox" [id]="'col-' + i"
-                      [checked]="!hiddenColumns().has(col.key)" (change)="toggleColumnVisibility(col.key)">
+            @defer (when showColVisMenu()) {
+              <ul class="uni-table__colvis-menu">
+                @for (col of dataConfigS().columns; track col.key; let i = $index) {
+                  <li (click)="$event.stopPropagation()">
+                    <div class="uni-table__colvis-item">
+                      <input class="uni-table__colvis-checkbox" type="checkbox" [id]="'col-' + i"
+                        [checked]="!hiddenColumns().has(col.key)" (change)="toggleColumnVisibility(col.key)">
                       <label class="uni-table__colvis-label" [for]="'col-' + i">
-                        {{ col.title }}
+                        {{ col.title || col.key }}
                       </label>
                     </div>
                   </li>
                 }
               </ul>
             }
-          </div>
-        }
+          }
+        </div>
+      }
 
-        <!-- Context Menu -->
-        @if (configS().showContextMenu) {
-          <div class="uni-context-menu-wrapper" #contextMenuWrapper>
-            <button class="uni-table__button icon-button" (click)="toggleMenu()">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            @if (menuOpen()) {
+      <!-- Context Menu -->
+      @if (configS().showContextMenu) {
+        <div class="uni-context-menu-wrapper" #contextMenuWrapper>
+          <button class="uni-table__button icon-button" (click)="toggleMenu()">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          @if (menuOpen()) {
+            @defer (when menuOpen()) {
               <ul class="uni-dropdown-content">
                 <ng-container *ngTemplateOutlet="getTemplate('menuItems')"></ng-container>
               </ul>
             }
-          </div>
-        }
+          }
+        </div>
+      }
 
       </div>
 
@@ -129,9 +133,9 @@
                     <div class="uni-table__th-content">
                       <span class="uni-header__label" [class.uni-header__label--wrap]="col.headerWrap">
                         @defer (on immediate) {
-                          <uni-label [key]="col.headerLabel || col.title"></uni-label>
+                          <uni-label [key]="col.headerLabel || col.title || ''"></uni-label>
                         } @placeholder {
-                          <span>{{ col.title }}</span>
+                          <span>{{ col.title || '' }}</span>
                         }
                       </span>
                       @if (col.orderable !== false) {
@@ -184,27 +188,31 @@
 
               <!-- Expanded Details Row -->
               @if (configS().overflow !== 'scroll' && getResponsiveHiddenColumns().length > 0 && expandedRows().has(i)) {
-                <tr class="uni-table__tr uni-table__tr--details">
-                  <td [attr.colspan]="dataConfigS().columns.length - hiddenColumns().size - responsiveHiddenColumns().size + 1">
-                    <div class="uni-table__details-content">
-                      <ul class="uni-table__details-list">
-                        @for (col of getResponsiveHiddenColumns(); track col.key) {
-                          <li class="uni-table__details-item">
-                            <strong>{{ col.title }}:</strong>
-                            <span class="uni-table__details-value" [ngStyle]="getCombinedStyle(col.cellStyle, row, col)">
-                              @let template = getColumnTemplate(col);
-                              @if (template) {
-                                <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: getCellValue(row, col.key) }"></ng-container>
-                              } @else {
-                                <span>{{ getCellValue(row, col.key) }}</span>
+                @defer (when expandedRows().has(i)) {
+                  <tr class="uni-table__tr uni-table__tr--details">
+                    <td [attr.colspan]="dataConfigS().columns.length - hiddenColumns().size - responsiveHiddenColumns().size + 1">
+                      <div class="uni-table__details-content">
+                        <ul class="uni-table__details-list">
+                          @for (col of getResponsiveHiddenColumns(); track col.key) {
+                            <li class="uni-table__details-item">
+                              @if (col.title) {
+                                <strong>{{ col.title }}:</strong>
                               }
-                            </span>
-                          </li>
-                        }
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
+                              <span class="uni-table__details-value" [ngStyle]="getCombinedStyle(col.cellStyle, row, col)">
+                                @let template = getColumnTemplate(col);
+                                @if (template) {
+                                  <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, value: getCellValue(row, col.key) }"></ng-container>
+                                } @else {
+                                  <span>{{ getCellValue(row, col.key) }}</span>
+                                }
+                              </span>
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                }
               }
             }
           </tbody>

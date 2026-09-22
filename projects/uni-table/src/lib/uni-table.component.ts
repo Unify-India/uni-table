@@ -1,6 +1,6 @@
 import {
   Component, OnInit, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy,
-  signal, computed, effect, TemplateRef, HostListener,
+  signal, computed, effect, TemplateRef,
   input, output, viewChild, contentChild, contentChildren, linkedSignal,
   AfterContentInit,
   ChangeDetectionStrategy
@@ -19,7 +19,10 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule, FormsModule, UniLabelComponent, UniSearchComponent],
   templateUrl: './uni-table.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './uni-table.component.scss'
+  styleUrl: './uni-table.component.scss',
+  host: {
+    '(document:click)': 'onDocumentClick($event)'
+  }
 })
 export class UniTableComponent<T extends object = Record<string, unknown>> implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
   // Signal Inputs
@@ -117,7 +120,6 @@ export class UniTableComponent<T extends object = Record<string, unknown>> imple
 
   draggedColumnIndex = signal<number | null>(null);
 
-  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (this.showColVisMenu() && !this.colVisWrapper()?.nativeElement.contains(event.target)) {
       this.showColVisMenu.set(false);

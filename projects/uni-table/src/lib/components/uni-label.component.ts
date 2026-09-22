@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class UniLabelComponent {
   // 1. The Key passed from config (e.g., 'USER.NAME')
-  key = input.required<string>();
+  key = input<string>('');
 
   // 2. Soft Injection: Try to get the service, but don't crash if missing
   private translate = inject(TranslateService, { optional: true });
@@ -28,6 +28,9 @@ export class UniLabelComponent {
   // 4. The Reactive Logic
   displayText = computed(() => {
     const k = this.key();
+    if (!k) {
+      return '';
+    }
     
     // Register dependency on the language signal so this re-runs when lang changes
     this.langChange(); 

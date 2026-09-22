@@ -15,6 +15,17 @@
 ![Uni-Table Client-Side Data Grid with Pagination and Search](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/client-side-table.png)
 ![Uni-Table Server-Side Data Grid](https://github.com/Unify-India/uni-table/blob/master/projects/uni-table-demo/docs/images/server-side-table.png)
 
+## 🚀 What's New in v22.0.0
+
+* **⚡ Pure Signal Architecture:** Upgraded to modern Angular Signals (`input()`, `linkedSignal()`, `computed()`) for lightning-fast, fine-grained updates without unnecessary re-renders.
+* **📦 On-Demand Deferred Rendering (`@defer`):** Dropdowns, column visibility managers, and expanded responsive rows load with `@defer` triggers for maximum runtime efficiency.
+* **🎯 Flexible Column Definitions:** `title` in `UniColumn` is optional; headerless columns (e.g. action buttons, icons) work cleanly without throwing errors.
+* **🎛️ Customizable Pagination:** Configure custom `pageLengthOptions` (`[5, 10, 25, 50, 100]`), toggle First/Last buttons, and switch between icons and text labels (`pagingControls`).
+* **🌐 Decoupled Translation Support:** Independent `<uni-label>` safely resolves translation keys when `@ngx-translate/core` is available without breaking when omitted.
+* **🛡️ Smart Auto-Closing Overlays:** Active dropdown menus and popovers automatically close on outside clicks via modern component `host` bindings.
+
+---
+
 ### 🎨 Visual Tour: Features in Action
 
 What you see in the screenshots above isn't just a static table—it's a high-performance data engine in action:

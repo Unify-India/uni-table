@@ -248,5 +248,66 @@ describe('UniTableComponent', () => {
       const cellStyleYoung = component.getCombinedStyle(colWithStyles.cellStyle, { id: 1, name: 'John', age: 20 }, colWithStyles);
       expect(cellStyleYoung['color']).toBe('blue');
     });
+
+    it('should handle columns with empty string or omitted title without errors', () => {
+      const colWithEmptyTitle: UniColumn<TestRow>[] = [
+        { key: 'id', title: 'ID' },
+        { key: 'actions', title: '' }
+      ];
+
+      expect(() => {
+        fixture.componentRef.setInput('dataConfig', {
+          columns: colWithEmptyTitle,
+          data: mockData
+        });
+        fixture.detectChanges();
+      }).not.toThrow();
+
+      const headers = fixture.debugElement.queryAll(By.css('th.uni-table__th'));
+      expect(headers.length).toBe(2);
+    });
+
+    it('should apply custom pageLengthOptions', () => {
+      fixture.componentRef.setInput('config', { pageLengthOptions: [3, 6, 9] });
+      fixture.detectChanges();
+
+      expect(component.effectivePageLengthOptions()).toEqual([3, 6, 9]);
+    });
+
+    it('should close dropdowns on document click outside', () => {
+      component.showColVisMenu.set(true);
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+
+      // Trigger document click
+      document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.showColVisMenu()).toBeFalse();
+      expect(component.menuOpen()).toBeFalse();
+    });
+
+    it('should configure custom pagination controls (first/last buttons, text vs icons)', () => {
+      fixture.componentRef.setInput('config', {
+        paging: true,
+        pageLength: 2,
+        pagingControls: {
+          firstLast: true,
+          type: 'text',
+          firstText: 'Start',
+          lastText: 'End',
+          prevText: 'Back',
+          nextText: 'Forward'
+        }
+      });
+      fixture.detectChanges();
+
+      const buttons = fixture.debugElement.queryAll(By.css('.uni-table__pagination-btn'));
+      const buttonTexts = buttons.map(b => b.nativeElement.textContent.trim());
+      expect(buttonTexts).toContain('Start');
+      expect(buttonTexts).toContain('End');
+      expect(buttonTexts).toContain('Back');
+      expect(buttonTexts).toContain('Forward');
+    });
   });
 });

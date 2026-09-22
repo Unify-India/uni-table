@@ -14,15 +14,29 @@
 
 ## 📚 Table of Contents
 
-- [Introduction](#uni-table-high-performance-angular-data-table-with-signals)
-- [Visual Tour](#-visual-tour-features-in-action)
-- [Installation](#-installation)
-- [Version Compatibility](#-version-compatibility)
-- [Key Features](#-key-features)
-- [Styling & Theming](#-effortless-styling-with-css-variables)
-- [Quick Start](#-quick-start)
-- [Documentation](#-detailed-documentation)
-- [Contributing](#-contributing--feedback)
+- [📚 Table of Contents](#-table-of-contents)
+  - [🚀 What's New in v22.0.0](#-whats-new-in-v2200)
+  - [🎨 Visual Tour: Features in Action](#-visual-tour-features-in-action)
+- [📦 Installation](#-installation)
+- [📊 Version Compatibility](#-version-compatibility)
+- [✨ Key Features](#-key-features)
+- [🎨 Effortless Styling with CSS Variables](#-effortless-styling-with-css-variables)
+- [🚀 Quick Start](#-quick-start)
+- [📖 Detailed Documentation](#-detailed-documentation)
+- [🤝 Contributing \& Feedback](#-contributing--feedback)
+- [👥 Core Team \& Contributors](#-core-team--contributors)
+- [License](#license)
+
+---
+
+## 🚀 What's New in v22.0.0
+
+* **⚡ Pure Signal Architecture:** Upgraded to modern Angular Signals (`input()`, `linkedSignal()`, `computed()`) for lightning-fast, fine-grained updates without unnecessary re-renders.
+* **📦 On-Demand Deferred Rendering (`@defer`):** Dropdowns, column visibility managers, and expanded responsive rows now load with `@defer` triggers, reducing DOM complexity and memory usage.
+* **🎯 Flexible Column Definitions:** `title` in `UniColumn` is fully optional; headerless columns (e.g. action buttons, icons) work without errors.
+* **🎛️ Customizable Pagination:** Configure `pageLengthOptions` (`[5, 10, 25, 50, 100]`), toggle First/Last buttons, and switch between icons and text labels (`pagingControls`).
+* **🌐 Decoupled Translation Support:** Standalone `<uni-label>` safely resolves translations when `@ngx-translate/core` is present without crashing if missing.
+* **🛡️ Smart Auto-Closing Overlays:** Active dropdown menus and popovers automatically close on outside clicks via modern component `host` bindings.
 
 ---
 
